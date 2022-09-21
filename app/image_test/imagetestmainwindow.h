@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+class QMdiArea;
+
 namespace Ui {
     class Image_test_main_window;
 };
@@ -17,6 +19,7 @@ private slots:
 
 private:
     Ui::Image_test_main_window* _UI;
+    QMdiArea* _mMdiArea;
 private:
     Q_OBJECT
 };

@@ -1,0 +1,25 @@
+cmake_minimum_required (VERSION 3.10)
+project(db_data_access VERSION 1.0.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpqxx -lpq")
+
+find_library(PQXX_LIB pqxx)
+find_library(PQ_LIB pq)
+
+set(HEADERS
+    opencv_database.h
+    opencv_db_result.h
+)
+
+set(SOURCES
+    opencv_database.cpp
+    opencv_db_result.cpp
+)
+
+add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} )
+
+target_link_libraries(${PROJECT_NAME} -lpqxx -lpq)

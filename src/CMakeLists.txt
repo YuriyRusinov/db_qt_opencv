@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(radius_src VERSION 1.0.0)
+project(db_opencv_src VERSION 1.0.0)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -12,12 +12,14 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package( OpenCV REQUIRED )
+
+add_subdirectory(dataaccess)
 
 include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
@@ -27,6 +29,7 @@ include_directories(${PROJECT_SOURCE_DIR}
 		            ${Qt5OpenGL_INCLUDE_DIRS}
 		            ${QWT_INCLUDE_DIRS}
                     ${OpenCV_INCLUDE_DIRS}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/dataaccess
                     )
 
 
@@ -43,10 +46,9 @@ set(RESOURCES
 )
 
 qt5_wrap_ui(UIS_HDRS ${FORMS} )
-add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${UIS_HDRS}
-	${RESOURCES} )
+add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${UIS_HDRS} ${RESOURCES} )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OpenCV_LIBS} )
 
 set(${PROJECT_NAME}_RUNTIME_LIBRARY_DIRS ${CMAKE_INSTALL_LIBDIR} )
 
