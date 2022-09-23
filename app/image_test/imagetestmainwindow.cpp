@@ -1,13 +1,17 @@
 #include <QMdiArea>
 #include <QtDebug>
 
+#include <db_opencv_singleton.h>
+
 #include "imagetestmainwindow.h"
 #include "ui_image_test_main_window.h"
 
 ImageTestMainWindow::ImageTestMainWindow(QWidget* parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags),
     _UI( new Ui::Image_test_main_window ),
-    _mMdiArea( new QMdiArea ) {
+    _mMdiArea( new QMdiArea ),
+    _mDbOpenCv( dbOpenCvS::getDBOpenCVSingleton() )
+{
     _UI->setupUi( this );
     setCentralWidget( _mMdiArea );
 
