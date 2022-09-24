@@ -10,14 +10,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpqxx -lpq")
 find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
 
+include_directories(/usr/include/)
+
 set(HEADERS
     opencv_database.h
+    opencv_pgdatabase.h
     opencv_db_result.h
+    opencv_db_pgresult.h
 )
 
 set(SOURCES
     opencv_database.cpp
+    opencv_pgdatabase.cpp
     opencv_db_result.cpp
+    opencv_db_pgresult.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} )

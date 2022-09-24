@@ -64,7 +64,6 @@ public:
     virtual const char * getColumnName(int column) const = 0;
     string getColumnNameAsString(int column) const;
 
-
     virtual unsigned char * getCellData( int row, int column ) const = 0; // возвращает результат запроса в виде char *
     virtual int getCellLength( int row, int column ) const = 0;
     
@@ -78,7 +77,6 @@ public:
     double getCellAsDouble(int row, int column, bool * ok = 0) const; // число двойной точности
     vector< string > getCellAsStringList(int row, int column, bool * ok = 0) const; // список строк
     string getCellAsDateTime(int row, int column, bool * ok = 0) const; // date and time in ISO format 
-
 
     virtual bool isEmpty(int row, int column) const = 0;
     virtual int getRowCount() const = 0;
