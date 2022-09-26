@@ -20,6 +20,7 @@ find_package(PkgConfig REQUIRED)
 find_package( OpenCV REQUIRED )
 
 add_subdirectory(dataaccess)
+add_subdirectory(imagefactories)
 
 include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
@@ -30,11 +31,17 @@ include_directories(${PROJECT_SOURCE_DIR}
 		            ${QWT_INCLUDE_DIRS}
                     ${OpenCV_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR}/dataaccess
-                    )
+                    ${CMAKE_CURRENT_SOURCE_DIR}/imagefactories
+                   )
 
+link_directories(${CMAKE_SOURCE_DIR}/src)
+
+link_directories(${CMAKE_SOURCE_DIR}/src/dataaccess)
+link_directories(${CMAKE_SOURCE_DIR}/src/imagefactories)
 
 set(HEADERS
     db_opencv_singleton.h
+    opencvcore.h
 )
 
 set(FORMS
@@ -42,6 +49,7 @@ set(FORMS
 
 set(SOURCES
     db_opencv_singleton.cpp
+    opencvcore.cpp
 )
 
 set(RESOURCES
@@ -50,7 +58,14 @@ set(RESOURCES
 qt5_wrap_ui(UIS_HDRS ${FORMS} )
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${UIS_HDRS} ${RESOURCES} )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OpenCV_LIBS} )
+target_link_libraries(${PROJECT_NAME} Qt5::Core ${QWT_LIBRARIES} ${OpenCV_LIBS} imagefactories db_data_access)
+
+set(HEADERS
+    db_opencv_singleton.h
+)
+
+set(FORMS
+)
 
 set(${PROJECT_NAME}_RUNTIME_LIBRARY_DIRS ${CMAKE_INSTALL_LIBDIR} )
 

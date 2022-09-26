@@ -2,6 +2,7 @@
 #include <QtDebug>
 
 #include <db_opencv_singleton.h>
+#include <opencvcore.h>
 
 #include "imagetestmainwindow.h"
 #include "ui_image_test_main_window.h"
@@ -25,6 +26,8 @@ ImageTestMainWindow::~ImageTestMainWindow() {
 
 void ImageTestMainWindow::dbConnect() {
     qDebug() << __PRETTY_FUNCTION__;
+    OpenCVCore* cvCore = _mDbOpenCv->getCore();
+    cvCore->GUIConnect();
 }
 
 void ImageTestMainWindow::close() {

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(image_test_app VERSION 1.0)
+project(imagefactories VERSION 1.0)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -29,35 +29,27 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${Qt5Network_INCLUDE_DIRS}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/src
+                    ${CMAKE_SOURCE_DIR}/src/dataaccess
                     )
 
-link_directories(${CMAKE_SOURCE_DIR}/src
-                 ${CMAKE_SOURCE_DIR}/src/dataaccess
-                 ${CMAKE_SOURCE_DIR}/src/imagefactories
-)
+link_directories(${CMAKE_SOURCE_DIR}/src)
 
 set(HEADERS
-    imagetestmainwindow.h
-)
-
-set(FORMS
-    image_test_main_window.ui
+    dbLoader.h
 )
 
 set(SOURCES
-    imagetestmainwindow.cpp
-    main.cpp
+    dbLoader.cpp
+)
+
+set(FORMS
 )
 
 set(RESOURCES
 )
 
-qt5_wrap_ui(UIS_HDRS ${FORMS} )
+add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${RESOURCES}  )
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${UIS_HDRS} ${RESOURCES}  )
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_data_access )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_opencv_src ${imagefactories_LIBS})
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-)
