@@ -19,7 +19,7 @@ public:
                           string _database = string(),
                           string _user = string(),
                           string _password = string(), 
-                          string _port = "5432",
+                          int _port = 5432,
                           bool reconnect = false ) const override;
 
     virtual bool connect( bool reconnect ) const override;
@@ -56,6 +56,6 @@ public:
     virtual bool rollback() const override;
 
 private:
-    pqxx::connection* _dbConnection;
-    pqxx::work* _dbWork;
+    mutable pqxx::connection* _dbConnection;
+    mutable pqxx::work* _dbWork;
 };

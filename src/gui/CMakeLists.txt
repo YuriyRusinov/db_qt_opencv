@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(imagefactories VERSION 1.0)
+project(db_gui VERSION 1.0)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -33,18 +33,17 @@ include_directories(${PROJECT_SOURCE_DIR}
                     )
 
 link_directories(${CMAKE_SOURCE_DIR}/src)
-link_directories(${CMAKE_SOURCE_DIR}/src/dataaccess)
-link_directories(${CMAKE_SOURCE_DIR}/src/gui)
 
 set(HEADERS
-    dbLoader.h
+    dbLoginForm.h
 )
 
 set(SOURCES
-    dbLoader.cpp
+    dbLoginForm.cpp
 )
 
 set(FORMS
+    db_login_form.ui
 )
 
 set(RESOURCES
@@ -52,6 +51,6 @@ set(RESOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${RESOURCES}  )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_data_access )
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} )
 
 

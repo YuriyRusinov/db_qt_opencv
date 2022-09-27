@@ -2,7 +2,7 @@
 
 OpenCVDatabase::OpenCVDatabase()
     : m_ipServer( string() ),
-      m_port( string () ),
+      m_port( -1 ),
       m_database( string() ),
       m_user( string() ),
       m_password( string() )

@@ -6,6 +6,7 @@ using std::unique_ptr;
 
 class dbLoader;
 class OpenCVCore;
+class OpenCVDatabase;
 
 class dbOpenCvS {
 public:
@@ -21,6 +22,7 @@ private:
     dbOpenCvS& operator=( const dbOpenCvS& ) = delete;
     virtual ~dbOpenCvS();
 
+    mutable OpenCVDatabase* m_db;
     mutable unique_ptr< dbLoader > m_databaseLoader;
     mutable /*unique_ptr<*/ OpenCVCore* /*>*/ m_cvcore;
 

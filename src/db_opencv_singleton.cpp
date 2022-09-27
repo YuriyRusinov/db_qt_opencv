@@ -1,5 +1,7 @@
 #include <dbLoader.h>
 #include <opencvcore.h>
+#include <opencv_database.h>
+#include <opencv_pgdatabase.h>
 #include "db_opencv_singleton.h"
 
 using std::make_unique;
@@ -20,7 +22,8 @@ void dbOpenCvS::reset() {
 }
 
 dbOpenCvS::dbOpenCvS()
-    : m_cvcore( new OpenCVCore ) {
+    : m_db( new OpenCVPgDatabase ),
+    m_cvcore( new OpenCVCore(m_db) ) {
     //dbLoader* dbW = new dbLoader;
     m_databaseLoader = make_unique<dbLoader>( new dbLoader );
 }

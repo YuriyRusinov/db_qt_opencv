@@ -1,7 +1,13 @@
+#include <iostream>
+#include <sstream>
+
 #include <pqxx/pqxx>
 #include <pqxx/connection.hxx>
 #include "opencv_pgdatabase.h"
 
+using std::cout;
+using std::endl;
+using std::stringstream;
 using pqxx::connection;
 
 OpenCVPgDatabase::OpenCVPgDatabase()
@@ -15,9 +21,24 @@ bool OpenCVPgDatabase::connect( string _ipServer,
                                 string _database,
                                 string _user,
                                 string _password, 
-                                string _port,
+                                int _port,
                                 bool reconnect ) const {
-    return false;
+    stringstream connString;
+    connString << " user= " << _user << " password= " << _password << " server=" << _ipServer << " dbname=" << _database << " port=" << _port;
+    if( _dbConnection != nullptr )
+        delete _dbConnection;
+
+    bool retVal = true;
+    try {
+        _dbConnection = new pqxx::connection( connString.str() );
+        retVal = _dbConnection->is_open();
+    }
+    catch( const std::exception &e ) {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+
+    return retVal;
 }
 
 bool OpenCVPgDatabase::connect( bool reconnect ) const {

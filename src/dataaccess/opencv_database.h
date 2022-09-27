@@ -21,8 +21,8 @@ public:
     virtual bool connect( string _ipServer = string(),
                           string _database = string(),
                           string _user = string(),
-                          string _password = string(), 
-                          string _port = "5432",
+                          string _password = string(),
+                          int _port = 5432,
                           bool reconnect = false ) const = 0;
 
     virtual bool connect( bool reconnect ) const = 0;
@@ -69,14 +69,14 @@ public:
     virtual bool rollback() const = 0;
 
     string getHost() const { return m_ipServer; }
-    string getPort() const { return m_port; }
+    int getPort() const { return m_port; }
     string getDb() const { return m_database; }
     string getUser() const { return m_user; }
     string getPassword() const { return m_password; }
 
 protected:
     mutable string m_ipServer;
-    mutable string m_port;
+    mutable int m_port;
     mutable string m_database;
     mutable string m_user;
     mutable string m_password;
