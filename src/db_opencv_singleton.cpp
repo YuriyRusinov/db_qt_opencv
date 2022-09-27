@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <dbLoader.h>
 #include <opencvcore.h>
 #include <opencv_database.h>
@@ -16,8 +18,12 @@ dbOpenCvS* dbOpenCvS::getDBOpenCVSingleton() {
 }
 
 void dbOpenCvS::reset() {
-    if( _instance )
+    bool isInst ( _instance !=nullptr );
+    //std::cout << __PRETTY_FUNCTION__ << ' ' << isInst << std::endl;
+    if( _instance != nullptr ) {
         delete _instance;
+        std::cout << __PRETTY_FUNCTION__ << "Deleted " << std::endl;
+    }
     _instance = nullptr;
 }
 
@@ -29,6 +35,9 @@ dbOpenCvS::dbOpenCvS()
 }
 
 dbOpenCvS::~dbOpenCvS() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    delete m_cvcore;
+    delete m_db;
 }
 
 unique_ptr<dbLoader>& dbOpenCvS::getDb() const {

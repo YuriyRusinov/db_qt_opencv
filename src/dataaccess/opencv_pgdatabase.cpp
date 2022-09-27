@@ -15,7 +15,9 @@ OpenCVPgDatabase::OpenCVPgDatabase()
     _dbWork ( nullptr ) {
 }
 
-OpenCVPgDatabase::~OpenCVPgDatabase() {}
+OpenCVPgDatabase::~OpenCVPgDatabase() {
+    cout << __PRETTY_FUNCTION__ << endl;
+}
 
 bool OpenCVPgDatabase::connect( string _ipServer,
                                 string _database,

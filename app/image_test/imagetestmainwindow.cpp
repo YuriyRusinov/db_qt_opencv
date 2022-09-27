@@ -32,5 +32,6 @@ void ImageTestMainWindow::dbConnect() {
 
 void ImageTestMainWindow::close() {
     qDebug() << __PRETTY_FUNCTION__;
+    _mDbOpenCv->reset();
     QMainWindow::close();
 }
