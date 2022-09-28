@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QWidget>
 
+class QSettings;
+
 class OpenCVDatabase;
 
 class OpenCVCore : public QObject {
@@ -14,6 +16,8 @@ private:
     virtual ~OpenCVCore();
 
     OpenCVDatabase* m_Db;
+
+    QSettings* m_cvSettings;
 
     friend class dbOpenCvS;
 private:

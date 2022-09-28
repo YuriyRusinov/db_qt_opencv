@@ -11,11 +11,13 @@ int main (int argc, char * argv[])
     QApplication * app = new QApplication (argc, argv);
 
     QMainWindow * rw = new ImageTestMainWindow;
-    rw->setAttribute(Qt::WA_DeleteOnClose);
 
     rw->show ();
 
     int retVal = app->exec();
+
+    if(rw)
+        delete rw;
 
     return retVal;
 }
