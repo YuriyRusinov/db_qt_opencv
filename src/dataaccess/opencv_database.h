@@ -25,8 +25,8 @@ public:
                           int _port = 5432,
                           bool reconnect = false ) const = 0;
 
-    virtual bool connect( bool reconnect ) const = 0;
-    virtual void disconnect( bool reconnect ) const = 0;
+    virtual bool connect( bool reconnect = false ) const = 0;
+    virtual void disconnect( bool reconnect = false ) const = 0;
     virtual bool connected() const = 0;
 
     virtual CVDbResult * execute( const char* query ) const = 0;

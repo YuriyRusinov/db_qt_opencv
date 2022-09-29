@@ -3,6 +3,10 @@
 
 #include <pqxx/pqxx>
 #include <pqxx/connection.hxx>
+#include <pqxx/transaction.hxx>
+#include <pqxx/result.hxx>
+
+#include "opencv_db_pgresult.h"
 #include "opencv_pgdatabase.h"
 
 using std::cout;
@@ -25,6 +29,8 @@ bool OpenCVPgDatabase::connect( string _ipServer,
                                 string _password, 
                                 int _port,
                                 bool reconnect ) const {
+    if( reconnect )
+        disconnect();
     stringstream connString;
     connString << " user= " << _user << " password= " << _password << " server=" << _ipServer << " dbname=" << _database << " port=" << _port;
     if( _dbConnection != nullptr )
@@ -39,24 +45,46 @@ bool OpenCVPgDatabase::connect( string _ipServer,
         std::cerr << e.what() << std::endl;
         return false;
     }
+    if( retVal ) {
+        m_ipServer = _ipServer;
+        m_port = _port;
+        m_database = _database;
+        m_user = _user;
+        m_password = _password;
+    }
 
     return retVal;
 }
 
 bool OpenCVPgDatabase::connect( bool reconnect ) const {
-    return false;
+    return connect( m_ipServer, m_database, m_user, m_password, m_port, reconnect);
 }
 
 void OpenCVPgDatabase::disconnect( bool reconnect ) const {
+    if ( _dbConnection ) {
+        delete _dbConnection;
+        _dbConnection = nullptr;
+    }
     return ;
 }
 
 bool OpenCVPgDatabase::connected() const {
-    return false;
+    return (_dbConnection != nullptr && _dbConnection->is_open() );
 }
 
 CVDbResult * OpenCVPgDatabase::execute( const char* query ) const {
-    return nullptr;
+    if( !_dbConnection )
+        return nullptr;
+    if( _dbWork )
+        delete _dbWork;
+    _dbWork = new pqxx::work( *_dbConnection );
+    string sQuery( query );
+
+    pqxx::result* res = new pqxx::result (_dbWork->exec( sQuery ));
+    CVDbResult * pRes = new CVDbPgResult ( res );
+//    std::cerr << __PRETTY_FUNCTION__ << ' ' << res->size() << ' ' << pRes->getRowCount() << ' ' << pRes->getColumnCount() << std::endl;
+
+    return pRes;
 }
 
 CVDbResult * OpenCVPgDatabase::execSQL( const char * sql, ...) const {

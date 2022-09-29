@@ -31,7 +31,15 @@
     <addaction name="separator"/>
     <addaction name="act_Quit"/>
    </widget>
+   <widget class="QMenu" name="menu_Images">
+    <property name="title">
+     <string>&amp;Images</string>
+    </property>
+    <addaction name="actInsert_image"/>
+    <addaction name="actionView_images"/>
+   </widget>
    <addaction name="menu_DB"/>
+   <addaction name="menu_Images"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="act_Connect">
@@ -45,6 +53,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actInsert_image">
+   <property name="text">
+    <string>Insert image ...</string>
+   </property>
+  </action>
+  <action name="actionView_images">
+   <property name="text">
+    <string>View images ...</string>
    </property>
   </action>
  </widget>

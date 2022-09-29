@@ -29,6 +29,8 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${Qt5Network_INCLUDE_DIRS}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/src
+                    ${CMAKE_SOURCE_DIR}/src/dataaccess
+                    ${CMAKE_SOURCE_DIR}/src/imagefactories
                     )
 
 link_directories(${CMAKE_SOURCE_DIR}/src

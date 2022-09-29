@@ -18,6 +18,7 @@ public:
 private slots:
     void dbConnect();
     void close();
+    void viewImages();
 
 private:
     Ui::Image_test_main_window* _UI;

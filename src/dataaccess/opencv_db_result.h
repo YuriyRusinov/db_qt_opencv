@@ -64,7 +64,7 @@ public:
     virtual const char * getColumnName(int column) const = 0;
     string getColumnNameAsString(int column) const;
 
-    virtual unsigned char * getCellData( int row, int column ) const = 0; // возвращает результат запроса в виде char *
+    virtual const char * getCellData( int row, int column ) const = 0; // возвращает результат запроса в виде const char *
     virtual int getCellLength( int row, int column ) const = 0;
     
     virtual string getCell(int row, int column) const = 0; // Возвращает результат sql-запроса в формате QVariant
@@ -88,7 +88,7 @@ public:
     virtual void next() = 0;
     virtual void prev() = 0;
 
-    inline unsigned char * getCellData( int column ) const
+    inline const char * getCellData( int column ) const
     { 
         return getCellData( currentRow, column ); 
     }

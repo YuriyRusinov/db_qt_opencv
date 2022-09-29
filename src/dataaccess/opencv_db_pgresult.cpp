@@ -1,51 +1,101 @@
+#include <cstring>
+
+#include <pqxx/result.hxx>
+#include <pqxx/row.hxx>
+#include <pqxx/field.hxx>
+
 #include "opencv_db_pgresult.h"
 
 using std::vector;
 
+CVDbPgResult::~CVDbPgResult() {
+    if( m_res )
+        delete m_res;
+}
+
 CVDbResult::DataType CVDbPgResult::getColumnDataType(int column) const
 {
-    return CVDbResult::dtUnknown;
+    if( m_res == nullptr || m_res->size() == 0 || column >= m_res->at(0).size() )
+        return CVDbResult::dtUnknown;
+    pqxx::field fCell ( m_res->at(0).at(column) );
+    return (CVDbResult::DataType)fCell.type();
 }
 
 int CVDbPgResult::getColumnNumber(const char * columnName) const
 {
-    return -1;
+    if( m_res == nullptr || columnName == nullptr || m_res->size() == 0 || m_res->at(0).size()==0 )
+        return -1;
+
+    pqxx::row r = m_res->at(0);
+    return r.column_type( columnName );
 }
 
 const char * CVDbPgResult::getColumnName(int column) const {
-    return nullptr;
+    if( m_res == nullptr || m_res->size() == 0 || column >= m_res->at(0).size() )
+        return nullptr;
+
+    const char* cName = m_res->column_name(column);
+    return cName;
 }
 
-unsigned char * CVDbPgResult::getCellData( int row, int column ) const {
-    return nullptr;
-} // возвращает результат запроса в виде char *
+const char * CVDbPgResult::getCellData( int row, int column ) const {
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return nullptr;
+
+    return (m_res->at(row).at(column).c_str());
+} // возвращает результат запроса в виде const char *
 
 int CVDbPgResult::getCellLength( int row, int column ) const {
-    return -1;
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return -1;
+    return m_res->at(row).at(column).size();
 }
 
 string CVDbPgResult::getCell(int row, int column) const {
-    return string();
-} // Возвращает результат sql-запроса в формате QVariant
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return string();
+
+    pqxx::field fCell( m_res->at(row).at(column) );
+    return pqxx::to_string(fCell);
+} // Возвращает результат sql-запроса в формате std::string
 
 vector< char > CVDbPgResult::getCellAsByteArray (int row, int column) const {
-    return vector<char>();
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return vector<char>();
+
+    const char* buffer = m_res->at(row).at(column).c_str();
+    vector<char>::size_type size = strlen((const char*)buffer);
+    vector<char> resbytes(buffer, buffer+size);
+    return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
 
 bool CVDbPgResult::isEmpty(int row, int column) const {
-    return true;
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return true;
+
+    pqxx::field fCell( m_res->at(row).at(column) );
+    return fCell.is_null();
 }
 
 int CVDbPgResult::getRowCount() const {
-    return -1;
+    if( m_res == nullptr )
+        return -1;
+    return m_res->size();
 }
 
 int CVDbPgResult::getColumnCount() const {
-    return -1;
+    if( m_res == nullptr || m_res->size() == 0 )
+        return -1;
+
+    pqxx::row r = m_res->at(0);
+    return m_res->at(0).size();
 }
 
 CVDbResult::ResultStatus CVDbPgResult::resultStatus() const {
-    return CVDbResult::Unknown;
+    if( m_res == nullptr )
+        return CVDbResult::Unknown;
+
+    return CVDbResult::CommandOk;
 }
 
 string CVDbPgResult::errorMessage() const {

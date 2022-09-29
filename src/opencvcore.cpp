@@ -47,5 +47,6 @@ OpenCVCore::OpenCVCore( OpenCVDatabase* db, QObject* parent )
     m_cvSettings( new QSettings(QSettings::NativeFormat, QSettings::UserScope, tr("YRusinov")) ) {}
 
 OpenCVCore::~OpenCVCore() {
+    m_Db->disconnect();
     delete m_cvSettings;
 }
