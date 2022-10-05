@@ -2,9 +2,9 @@
 #include <opencv_pgdatabase.h>
 #include "dbLoader.h"
 
-dbLoader::dbLoader( QObject* parent )
+dbLoader::dbLoader( OpenCVDatabase* db, QObject* parent )
     : QObject( parent ), 
-    m_db( new OpenCVPgDatabase ) {
+    m_db( db ) {
 }
 
 dbLoader::~dbLoader() {

@@ -5,8 +5,9 @@
 class OpenCVDatabase;
 class dbLoader : public QObject {
 public:
-    explicit dbLoader( QObject* parent = nullptr );
-    dbLoader( const dbLoader& dbl ) = delete;
+    explicit dbLoader( OpenCVDatabase* db, QObject* parent = nullptr );
+    dbLoader() = delete;
+    dbLoader( const dbLoader& ) = delete;
     dbLoader& operator=( const dbLoader& dbl ) = delete;
     virtual ~dbLoader();
 

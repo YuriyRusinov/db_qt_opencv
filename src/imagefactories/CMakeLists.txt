@@ -38,10 +38,12 @@ link_directories(${CMAKE_SOURCE_DIR}/src/gui)
 
 set(HEADERS
     dbLoader.h
+    dbWriter.h
 )
 
 set(SOURCES
     dbLoader.cpp
+    dbWriter.cpp
 )
 
 set(FORMS

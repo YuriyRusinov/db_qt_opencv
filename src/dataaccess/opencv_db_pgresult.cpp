@@ -1,8 +1,12 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cstring>
 
 #include <pqxx/result.hxx>
 #include <pqxx/row.hxx>
 #include <pqxx/field.hxx>
+#include <pqxx/binarystring.hxx>
 
 #include "opencv_db_pgresult.h"
 
@@ -42,6 +46,10 @@ const char * CVDbPgResult::getCellData( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return nullptr;
 
+    std::stringstream sFileName;
+    sFileName << "binary_file_data_" << row;
+    std::ofstream debFile(sFileName.str().c_str());
+    debFile << m_res->at(row).at(column).c_str();
     return (m_res->at(row).at(column).c_str());
 } // возвращает результат запроса в виде const char *
 
@@ -56,6 +64,11 @@ string CVDbPgResult::getCell(int row, int column) const {
         return string();
 
     pqxx::field fCell( m_res->at(row).at(column) );
+    pqxx::binarystring fCellB( fCell );
+//    std::stringstream sFileName;
+//    sFileName << "binary_file_" << row;
+//    std::ofstream debFile(sFileName.str().c_str());
+    std::cerr << fCellB.data() << std::endl;//m_res->at(row).at(column);
     return pqxx::to_string(fCell);
 } // Возвращает результат sql-запроса в формате std::string
 
@@ -65,6 +78,7 @@ vector< char > CVDbPgResult::getCellAsByteArray (int row, int column) const {
 
     const char* buffer = m_res->at(row).at(column).c_str();
     vector<char>::size_type size = strlen((const char*)buffer);
+    std::cerr << __PRETTY_FUNCTION__ << size << std::endl;
     vector<char> resbytes(buffer, buffer+size);
     return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea

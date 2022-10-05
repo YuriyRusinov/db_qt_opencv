@@ -30,16 +30,10 @@ void dbOpenCvS::reset() {
 dbOpenCvS::dbOpenCvS()
     : m_db( new OpenCVPgDatabase ),
     m_cvcore( new OpenCVCore(m_db) ) {
-    //dbLoader* dbW = new dbLoader;
-    m_databaseLoader = make_unique<dbLoader>( new dbLoader );
 }
 
 dbOpenCvS::~dbOpenCvS() {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     delete m_cvcore;
     delete m_db;
-}
-
-unique_ptr<dbLoader>& dbOpenCvS::getDb() const {
-    return m_databaseLoader;
 }

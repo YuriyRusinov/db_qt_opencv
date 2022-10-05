@@ -10,6 +10,7 @@
 #include "opencv_pgdatabase.h"
 
 using std::cout;
+using std::cerr;
 using std::endl;
 using std::stringstream;
 using pqxx::connection;
@@ -82,7 +83,6 @@ CVDbResult * OpenCVPgDatabase::execute( const char* query ) const {
 
     pqxx::result* res = new pqxx::result (_dbWork->exec( sQuery ));
     CVDbResult * pRes = new CVDbPgResult ( res );
-//    std::cerr << __PRETTY_FUNCTION__ << ' ' << res->size() << ' ' << pRes->getRowCount() << ' ' << pRes->getColumnCount() << std::endl;
 
     return pRes;
 }
@@ -113,25 +113,86 @@ CVDbResult * OpenCVPgDatabase::execParams(
                                 int resultFormat
                                ) const 
 {
-    return nullptr;
+    if( _dbConnection == nullptr )
+        return nullptr;
+
+    stringstream SQLstr;
+    SQLstr << command << ' ' ;
+    for(int i=0; i<nParams; i++) {
+        SQLstr << "$" << (i+1) << (i<nParams-1 ? ", " : ");");
+    }
+    cerr << __PRETTY_FUNCTION__ << " SQL query is " << SQLstr.str() << endl;
+    _dbConnection->prepare("execParams", SQLstr.str().c_str());
+    if( _dbWork )
+        delete _dbWork;
+    _dbWork = new pqxx::work( *_dbConnection );
+    std::vector< pqxx::binarystring > params;
+    for(int i=0; i<nParams; i++) {
+        switch( paramTypes[i] ) {
+            case CVDbResult::DataType::dtVarchar : default: {
+                char* paramData = new char [paramLengths[i]];
+                strncpy( paramData, paramValues[i], paramLengths[i]);
+                pqxx::binarystring vchar( paramData, paramLengths[i]);
+                params.push_back( vchar );
+                delete [] paramData;
+                break;
+            }
+            case CVDbResult::DataType::dtBytea : {
+                void* paramData = (void *)paramValues[i];
+                int paramSize = paramLengths[i];
+                //cerr << __PRETTY_FUNCTION__ << " " << paramSize;
+                pqxx::binarystring blob(paramData, paramSize);
+                params.push_back( blob );
+                break;
+            }
+        }
+    }
+    pqxx::result res = _dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(params));
+    if (std::empty(res)) {
+        this->rollback();
+        throw std::runtime_error{"query does not executed!"};
+    }
+    _dbWork->commit();
+    CVDbResult* rParamRes = new CVDbPgResult( &res );
+    return rParamRes;
 }
 
-char * OpenCVPgDatabase::escapeAsciiString(const char * fromString) const {
-    return nullptr;
+string OpenCVPgDatabase::escapeAsciiString(const char * fromString) const {
+    if(fromString == nullptr || _dbConnection == nullptr)
+        return string();
+
+    return _dbConnection->esc( fromString );
 }
 
 string OpenCVPgDatabase::escapeBinaryString(const unsigned char * fromString) const {
-    return string();
+    if(fromString == nullptr || _dbConnection == nullptr)
+        return string();
+
+    int n = strlen( (char *)fromString );
+    return _dbConnection->esc_raw( fromString, n );
 }
 
 bool OpenCVPgDatabase::begin() const {
-    return false;
+    if( _dbConnection == nullptr || _dbWork != nullptr )
+        return false;
+
+    _dbWork = new pqxx::work( *_dbConnection );
+    return true;
 }
 
 bool OpenCVPgDatabase::commit() const {
-    return false;
+    if( _dbConnection == nullptr || _dbWork == nullptr )
+        return false;
+
+    _dbWork->commit();
+    return true;
 }
 
 bool OpenCVPgDatabase::rollback() const {
-    return false;
+    if( _dbConnection == nullptr || _dbWork == nullptr )
+        return false;
+
+    delete _dbWork;
+    _dbWork = nullptr;
+    return true;
 }

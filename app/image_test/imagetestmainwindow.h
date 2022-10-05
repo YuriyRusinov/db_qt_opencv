@@ -19,12 +19,18 @@ private slots:
     void dbConnect();
     void close();
     void viewImages();
+    void insertImage();
 
+    void setActionsEnable( bool enable );
+    void addSubWindow( QWidget* w );
 private:
+    void init();
+
     Ui::Image_test_main_window* _UI;
     QMdiArea* _mMdiArea;
 
     dbOpenCvS* _mDbOpenCv;
+    bool _isDbConnected;
 private:
     Q_OBJECT
 };

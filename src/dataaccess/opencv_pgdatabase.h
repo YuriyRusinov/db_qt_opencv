@@ -48,7 +48,7 @@ public:
                                     const int * paramFormats, 
                                     int resultFormat
                                    ) const override;
-    virtual char *    escapeAsciiString(const char * fromString) const override;
+    virtual string   escapeAsciiString(const char * fromString) const override;
     virtual string   escapeBinaryString(const unsigned char * fromString) const override;
 
     virtual bool begin() const override;

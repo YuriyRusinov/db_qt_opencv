@@ -3,8 +3,13 @@
 #include <QtDebug>
 #include <dbLoginForm.h>
 
+#include <dbLoader.h>
+#include <dbWriter.h>
 #include <opencv_database.h>
 #include "opencvcore.h"
+
+using std::make_unique;
+using std::make_shared;
 
 bool OpenCVCore::GUIConnect(QWidget* parent, Qt::WindowFlags flags) {
     qDebug() << __PRETTY_FUNCTION__;
@@ -44,9 +49,20 @@ bool OpenCVCore::GUIConnect(QWidget* parent, Qt::WindowFlags flags) {
 OpenCVCore::OpenCVCore( OpenCVDatabase* db, QObject* parent )
     : QObject( parent ),
     m_Db(db), 
-    m_cvSettings( new QSettings(QSettings::NativeFormat, QSettings::UserScope, tr("YRusinov")) ) {}
+    m_databaseLoader ( make_shared<dbLoader>( db ) ),
+    m_databaseWriter ( make_shared<dbWriter>( db ) ),
+    m_cvSettings( new QSettings(QSettings::NativeFormat, QSettings::UserScope, tr("YRusinov")) ) {
+}
 
 OpenCVCore::~OpenCVCore() {
     m_Db->disconnect();
     delete m_cvSettings;
+}
+
+shared_ptr<dbLoader> OpenCVCore::getDbLoader() const {
+    return m_databaseLoader ;
+}
+
+shared_ptr< dbWriter > OpenCVCore::getDbWriter() const {
+    return m_databaseWriter ;
 }

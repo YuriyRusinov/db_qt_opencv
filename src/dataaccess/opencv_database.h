@@ -61,18 +61,18 @@ public:
                                     int resultFormat
                                     ) const;
 
-    virtual char *    escapeAsciiString(const char * fromString) const = 0;
+    virtual string   escapeAsciiString(const char * fromString) const = 0;
     virtual string   escapeBinaryString(const unsigned char * fromString) const = 0;
 
     virtual bool begin() const = 0;
     virtual bool commit() const = 0;
     virtual bool rollback() const = 0;
 
-    string getHost() const { return m_ipServer; }
+    const string& getHost() const { return m_ipServer; }
     int getPort() const { return m_port; }
-    string getDb() const { return m_database; }
-    string getUser() const { return m_user; }
-    string getPassword() const { return m_password; }
+    const string& getDb() const { return m_database; }
+    const string& getUser() const { return m_user; }
+    const string& getPassword() const { return m_password; }
 
 protected:
     mutable string m_ipServer;
