@@ -6,6 +6,7 @@
 #include <dbLoader.h>
 #include <dbWriter.h>
 #include <opencv_database.h>
+#include <cvImageForm.h>
 #include "opencvcore.h"
 
 using std::make_unique;
@@ -65,4 +66,15 @@ shared_ptr<dbLoader> OpenCVCore::getDbLoader() const {
 
 shared_ptr< dbWriter > OpenCVCore::getDbWriter() const {
     return m_databaseWriter ;
+}
+
+void OpenCVCore::loadImage( const QImage& im, QWidget* parent, Qt::WindowFlags flags ) {
+    cvImageForm* imWidget = new cvImageForm(im, parent, flags);
+    connect( imWidget, &cvImageForm::saveImage, this, &OpenCVCore::saveImageToDb );
+    emit setWidget( imWidget );
+}
+
+void OpenCVCore::saveImageToDb( const QImage& im, QString imName ) {
+    int imId = m_databaseWriter->insertImage( im, imName );
+    qDebug() << __PRETTY_FUNCTION__ << imId;
 }

@@ -3,6 +3,7 @@
 #include <QPixmap>
 #include <QtDebug>
 
+#include <iostream>
 #include <string>
 
 #include <opencv_database.h>
@@ -12,6 +13,8 @@
 #include "dbWriter.h"
 
 using std::string;
+using std::cerr;
+using std::endl;
 
 dbWriter::dbWriter( OpenCVDatabase* db, QObject* parent )
     : QObject(parent),
@@ -21,7 +24,7 @@ dbWriter::dbWriter( OpenCVDatabase* db, QObject* parent )
 dbWriter::~dbWriter( ) {
 }
 
-bool dbWriter::insertImage(const QImage& im) {
+int dbWriter::insertImage(const QImage& im, QString imName) {
     qDebug() << __PRETTY_FUNCTION__ << im.size();
     QByteArray baImg;
     QBuffer buffer(&baImg);
@@ -33,12 +36,11 @@ bool dbWriter::insertImage(const QImage& im) {
     paramTypes[0] = CVDbResult::DataType::dtVarchar;
     paramTypes[1] = CVDbResult::DataType::dtBytea;
     char** paramValues = new char*[nParams];
-    string imStr{"Test image"};
-    paramValues[0] = new char [imStr.size()+1];
-    strncpy( paramValues[0], imStr.c_str(), imStr.size());
+    paramValues[0] = new char [imName.length()+1];
+    strncpy( paramValues[0], imName.toStdString().c_str(), imName.size());
     paramValues[1] = baImg.data();
     int* paramLength = new int[nParams];
-    paramLength[0] = imStr.size();
+    paramLength[0] = imName.size();
     paramLength[1] = baImg.size();
     int* paramFormats = new int[nParams];
     int resForm = 0;
@@ -60,6 +62,11 @@ bool dbWriter::insertImage(const QImage& im) {
     }
     delete [] paramValues;
 
-    return (res != nullptr);
-//    return false;
+    int imId = -1;
+    if (res != nullptr ) {
+        imId = res->getCellAsInt(0, 0);
+        delete res;
+    }
+
+    return imId;
 }

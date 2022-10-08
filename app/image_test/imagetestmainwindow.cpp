@@ -27,9 +27,11 @@ ImageTestMainWindow::ImageTestMainWindow(QWidget* parent, Qt::WindowFlags flags)
     _UI->setupUi( this );
     setCentralWidget( _mMdiArea );
     setActionsEnable( false );
+    OpenCVCore* cvCore = _mDbOpenCv->getCore();
 
     connect( _UI->act_Connect, &QAction::triggered, this, &ImageTestMainWindow::dbConnect );
     connect( _UI->actionView_images, &QAction::triggered, this, &ImageTestMainWindow::viewImages );
+    connect( cvCore, &OpenCVCore::setWidget, this, &ImageTestMainWindow::addSubWindow );
     connect( _UI->actInsert_image, &QAction::triggered, this,  &ImageTestMainWindow::insertImage );
     connect( _UI->act_Quit, &QAction::triggered, this, &ImageTestMainWindow::close );
 }
@@ -88,14 +90,8 @@ void ImageTestMainWindow::insertImage() {
         return;
 
     QImage im(imageFileName);
-    QLabel* lImage = new QLabel;
-    QPixmap pix = QPixmap::fromImage(im);
-    lImage->setPixmap(pix);
-    addSubWindow( lImage );
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
-    shared_ptr<dbWriter> dbw = cvCore->getDbWriter();
-    qDebug() << __PRETTY_FUNCTION__ << dbw.use_count() ;
-    dbw->insertImage( im );
+    cvCore->loadImage( im );
 }
 
 void ImageTestMainWindow::addSubWindow( QWidget* w ) {

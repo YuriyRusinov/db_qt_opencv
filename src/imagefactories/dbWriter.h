@@ -11,7 +11,7 @@ public:
     dbWriter& operator=( const dbWriter& ) = delete;
     virtual ~dbWriter( );
 
-    bool insertImage(const QImage& im);
+    int insertImage(const QImage& im, QString imName);
 
 private:
     OpenCVDatabase* m_db;

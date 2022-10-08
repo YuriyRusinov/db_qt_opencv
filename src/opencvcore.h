@@ -22,6 +22,14 @@ public:
     shared_ptr< dbLoader > getDbLoader() const;
     shared_ptr< dbWriter > getDbWriter() const;
 
+    void loadImage( const QImage& im, QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
+
+private slots:
+    void saveImageToDb( const QImage& im, QString imName );
+
+signals:
+    void setWidget( QWidget* w );
+
 private:
     OpenCVCore( OpenCVDatabase* db, QObject* parent = nullptr );
     virtual ~OpenCVCore();

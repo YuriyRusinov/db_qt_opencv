@@ -17,7 +17,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(PkgConfig REQUIRED)
-#find_package(FFTW REQUIRED)
 pkg_check_modules(FFTW IMPORTED_TARGET REQUIRED fftw3)
 find_package( OpenCV REQUIRED )
 
@@ -36,14 +35,17 @@ link_directories(${CMAKE_SOURCE_DIR}/src)
 
 set(HEADERS
     dbLoginForm.h
+    cvImageForm.h
 )
 
 set(SOURCES
     dbLoginForm.cpp
+    cvImageForm.cpp
 )
 
 set(FORMS
     db_login_form.ui
+    cv_image_form.ui
 )
 
 set(RESOURCES

@@ -60,14 +60,12 @@ int CVDbPgResult::getCellLength( int row, int column ) const {
 }
 
 string CVDbPgResult::getCell(int row, int column) const {
+    std::cerr << __PRETTY_FUNCTION__ << std::endl;
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return string();
 
     pqxx::field fCell( m_res->at(row).at(column) );
     pqxx::binarystring fCellB( fCell );
-//    std::stringstream sFileName;
-//    sFileName << "binary_file_" << row;
-//    std::ofstream debFile(sFileName.str().c_str());
     std::cerr << fCellB.data() << std::endl;//m_res->at(row).at(column);
     return pqxx::to_string(fCell);
 } // Возвращает результат sql-запроса в формате std::string

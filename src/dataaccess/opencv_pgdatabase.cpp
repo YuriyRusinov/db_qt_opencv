@@ -147,13 +147,13 @@ CVDbResult * OpenCVPgDatabase::execParams(
             }
         }
     }
-    pqxx::result res = _dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(params));
-    if (std::empty(res)) {
+    pqxx::result *res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(params)));
+    if (std::empty(*res)) {
         this->rollback();
         throw std::runtime_error{"query does not executed!"};
     }
     _dbWork->commit();
-    CVDbResult* rParamRes = new CVDbPgResult( &res );
+    CVDbResult* rParamRes = new CVDbPgResult( res );
     return rParamRes;
 }
 
