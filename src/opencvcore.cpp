@@ -60,7 +60,7 @@ OpenCVCore::~OpenCVCore() {
     delete m_cvSettings;
 }
 
-shared_ptr<dbLoader> OpenCVCore::getDbLoader() const {
+shared_ptr< dbLoader > OpenCVCore::getDbLoader() const {
     return m_databaseLoader ;
 }
 

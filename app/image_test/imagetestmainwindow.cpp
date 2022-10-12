@@ -1,3 +1,4 @@
+#include <QBuffer>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -5,7 +6,14 @@
 #include <QMdiArea>
 #include <QMdiSubWindow>
 #include <QPixmap>
+#include <QTreeView>
+#include <QStandardItemModel>
 #include <QtDebug>
+
+#include <iostream>
+#include <fstream>
+
+#include <pqxx/binarystring.hxx>
 
 #include <db_opencv_singleton.h>
 #include <opencvcore.h>
@@ -13,9 +21,12 @@
 #include <opencv_db_result.h>
 #include <dbLoader.h>
 #include <dbWriter.h>
+#include <dbImageClass.h>
 
 #include "imagetestmainwindow.h"
 #include "ui_image_test_main_window.h"
+
+using std::ios_base;
 
 ImageTestMainWindow::ImageTestMainWindow(QWidget* parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags),
@@ -55,24 +66,27 @@ void ImageTestMainWindow::close() {
 
 void ImageTestMainWindow::viewImages() {
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
-    OpenCVDatabase* db = cvCore->getDb();
-
-    CVDbResult * res = db->execute("select id, name, image_bytes from images;");
-    int n = res->getRowCount();
-    for(int i=0; i<n; i++) {
-        string chs = res->getCell(i, 2);
-        const char* imByArray = res->getCellData(i, 2);
-        QByteArray imBytes(chs.c_str());
-        QImage im;
-        im.loadFromData(imBytes);
-        //QString imFile = QString("TestImage_%1.png").arg(i);
-        //bool isSaved = im.save(imFile, "PNG");
-        qDebug() << __PRETTY_FUNCTION__ << res->getCellAsInt(i, 0) << ' ' << QString(res->getCellAsString(i, 1).c_str()) ;
-        /*QFile chsF (QString("TestImage_%1").arg(i));
-        chsF.open(QIODevice::WriteOnly);
-        QDataStream chsFD(&chsF);
-        chsFD << imBytes;*/
+    shared_ptr< dbLoader > dbl = cvCore->getDbLoader();
+    QMap<long, dbImages> images = dbl->loadImages();
+    QTreeView* tvImages = new QTreeView;
+    QAbstractItemModel * imModel = new QStandardItemModel( images.size(), 3 );
+    tvImages->setModel( imModel );
+    imModel->setHeaderData( 0, Qt::Horizontal, tr("ID"), Qt::DisplayRole );
+    imModel->setHeaderData( 1, Qt::Horizontal, tr("Image name"), Qt::DisplayRole );
+    imModel->setHeaderData( 2, Qt::Horizontal, tr("Image"), Qt::DisplayRole );
+    int i=0;
+    for(QMap<long, dbImages>::const_iterator pim = images.constBegin();
+                                             pim != images.constEnd();
+                                             pim++ ) {
+        imModel->setData( imModel->index(i, 0), QVariant((qlonglong)pim.key()), Qt::DisplayRole );
+        imModel->setData( imModel->index(i, 1), pim.value().getName(), Qt::DisplayRole );
+        QImage im = pim.value().getImage();
+        imModel->setData( imModel->index(i, 2), QVariant(im), Qt::DecorationRole );
+        i++;
     }
+    qDebug() << __PRETTY_FUNCTION__ << imModel->rowCount();
+
+    addSubWindow( tvImages );
 }
 
 void ImageTestMainWindow::init() {
@@ -90,6 +104,32 @@ void ImageTestMainWindow::insertImage() {
         return;
 
     QImage im(imageFileName);
+/*    im.save("ttt.jpg", "JPG");
+
+    QByteArray ba;
+    QBuffer bbb( &ba );
+    bbb.open( QBuffer::WriteOnly );
+
+    im.save( &bbb, "JPG" );
+    bbb.close();
+
+    QImage im1;
+    bool isLoaded = im1.loadFromData( ba );
+    qDebug() << __PRETTY_FUNCTION__ << isLoaded << im1.isNull();
+    im1.save("ttt_1.jpg", "JPG");
+
+    const void* pBa ( (const void *)ba );
+    pqxx::binarystring pqStr( pBa, ba.size() );
+    qDebug() << __PRETTY_FUNCTION__ << ba.size() << ba.toStdString().size() << pqStr.size();
+    QByteArray ba1 = QByteArray::fromRawData( pqStr.get(),  pqStr.size() );
+    QImage im2;
+    bool isLoaded2 = im2.loadFromData( ba1 );
+    qDebug() << __PRETTY_FUNCTION__ << isLoaded2 << ba1.size();
+    QFile tstIm("ttt_2.jpg");
+    tstIm.open( QBuffer::WriteOnly );
+    im2.save( &tstIm );
+    tstIm.close();
+*/
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
     cvCore->loadImage( im );
 }

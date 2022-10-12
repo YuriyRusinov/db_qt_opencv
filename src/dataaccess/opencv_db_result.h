@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QByteArray>
+
 #include <string>
 #include <list>
 #include <vector>
@@ -68,7 +70,7 @@ public:
     virtual int getCellLength( int row, int column ) const = 0;
     
     virtual string getCell(int row, int column) const = 0; // Возвращает результат sql-запроса в формате QVariant
-    virtual vector< char > getCellAsByteArray (int row, int column) const = 0; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
+    virtual QByteArray getCellAsByteArray (int row, int column) const = 0; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
     
     int getCellAsInt(int row, int column, bool * ok = 0) const; // Возвращает результат sql-запроса в виде целого числа
     long long getCellAsInt64(int row, int column, bool * ok = 0) const; // Возвращает результат sql-запроса в виде целого числа

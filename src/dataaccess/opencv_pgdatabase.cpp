@@ -140,7 +140,10 @@ CVDbResult * OpenCVPgDatabase::execParams(
             case CVDbResult::DataType::dtBytea : {
                 void* paramData = (void *)paramValues[i];
                 int paramSize = paramLengths[i];
-                //cerr << __PRETTY_FUNCTION__ << " " << paramSize;
+                //QImage im;
+                //QByteArray ba = QByteArray::fromRawData( paramValues[i], paramSize);
+                //bool isLoaded = im.loadFromData( ba );
+                //cerr << __PRETTY_FUNCTION__ << " " << paramSize << ' ' << (isLoaded ? "true" : "false") << ' ' << endl;
                 pqxx::binarystring blob(paramData, paramSize);
                 params.push_back( blob );
                 break;

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <QMap>
 #include <QObject>
+
+#include "dbImageClass.h"
 
 class OpenCVDatabase;
 class dbLoader : public QObject {
@@ -10,6 +13,8 @@ public:
     dbLoader( const dbLoader& ) = delete;
     dbLoader& operator=( const dbLoader& dbl ) = delete;
     virtual ~dbLoader();
+
+    QMap<long, dbImages> loadImages();
 
     friend class dbOpenCvS;
 private:

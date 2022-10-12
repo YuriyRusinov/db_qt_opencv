@@ -8,7 +8,6 @@ using std::endl;
 
 int CVDbResult::getCellAsInt(int row, int column, bool * ok) const {
     string v = getCell(row, column);
-    cerr << __PRETTY_FUNCTION__ << ' ' << v << endl;
     if( v.empty() ) {
         if(ok) *ok = false;
         return 0;

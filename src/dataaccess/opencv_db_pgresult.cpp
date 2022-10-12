@@ -46,17 +46,22 @@ const char * CVDbPgResult::getCellData( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return nullptr;
 
-    std::stringstream sFileName;
+    pqxx::field fCell( m_res->at(row).at(column) );
+    pqxx::binarystring res_pqxx ( fCell );
+    return res_pqxx.get();
+    /*std::stringstream sFileName;
     sFileName << "binary_file_data_" << row;
     std::ofstream debFile(sFileName.str().c_str());
     debFile << m_res->at(row).at(column).c_str();
-    return (m_res->at(row).at(column).c_str());
+    return (m_res->at(row).at(column).c_str());*/
 } // возвращает результат запроса в виде const char *
 
 int CVDbPgResult::getCellLength( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return -1;
-    return m_res->at(row).at(column).size();
+    pqxx::field fCell( m_res->at(row).at(column) );
+    pqxx::binarystring res_pqxx ( fCell );
+    return res_pqxx.size();
 }
 
 string CVDbPgResult::getCell(int row, int column) const {
@@ -70,14 +75,16 @@ string CVDbPgResult::getCell(int row, int column) const {
     return pqxx::to_string(fCell);
 } // Возвращает результат sql-запроса в формате std::string
 
-vector< char > CVDbPgResult::getCellAsByteArray (int row, int column) const {
+QByteArray CVDbPgResult::getCellAsByteArray (int row, int column) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
-        return vector<char>();
+        return QByteArray();
 
-    const char* buffer = m_res->at(row).at(column).c_str();
-    vector<char>::size_type size = strlen((const char*)buffer);
-    std::cerr << __PRETTY_FUNCTION__ << size << std::endl;
-    vector<char> resbytes(buffer, buffer+size);
+    pqxx::field fCell( m_res->at(row).at(column) );
+    pqxx::binarystring fCellB( fCell );
+    pqxx::field::size_type nn = fCellB.size();//strlen((const char*)buffer);
+    //std::cerr << __PRETTY_FUNCTION__ << ' ' << nn << std::endl;
+    QByteArray resbytes = QByteArray::fromRawData( fCellB.get(), nn);
+
     return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
 

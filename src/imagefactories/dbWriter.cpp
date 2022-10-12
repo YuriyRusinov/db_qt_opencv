@@ -1,6 +1,8 @@
 #include <QBuffer>
+#include <QFile>
 #include <QImage>
 #include <QPixmap>
+#include <QDataStream>
 #include <QtDebug>
 
 #include <iostream>
@@ -25,23 +27,27 @@ dbWriter::~dbWriter( ) {
 }
 
 int dbWriter::insertImage(const QImage& im, QString imName) {
-    qDebug() << __PRETTY_FUNCTION__ << im.size();
     QByteArray baImg;
     QBuffer buffer(&baImg);
-    buffer.open( QBuffer::WriteOnly );
-    QPixmap::fromImage(im).save(&buffer, "JPG");
+    im.save( &buffer, "JPG" );
+    buffer.close();
+
+    qDebug() << __PRETTY_FUNCTION__ << im.size() << baImg.size();
     QString SQL ("select image_insert (");
     const int nParams = 2;
     int* paramTypes = new int[nParams];
     paramTypes[0] = CVDbResult::DataType::dtVarchar;
     paramTypes[1] = CVDbResult::DataType::dtBytea;
-    char** paramValues = new char*[nParams];
+    const char** paramValues = new const char*[nParams];
     paramValues[0] = new char [imName.length()+1];
-    strncpy( paramValues[0], imName.toStdString().c_str(), imName.size());
-    paramValues[1] = baImg.data();
+    strncpy( const_cast<char *>(paramValues[0]), imName.toStdString().c_str(), imName.size());
+    const void* pBa ( (const void *)baImg );
+    int imgN = baImg.size();
+    pqxx::binarystring pqStr( pBa, imgN );
+    paramValues[1] = pqStr.get();
     int* paramLength = new int[nParams];
     paramLength[0] = imName.size();
-    paramLength[1] = baImg.size();
+    paramLength[1] = imgN;
     int* paramFormats = new int[nParams];
     int resForm = 0;
     CVDbResult* res = m_db->execParams( SQL.toStdString().c_str(),

@@ -27,11 +27,11 @@ public:
     virtual int getColumnNumber(const char * columnName) const override;
     virtual const char * getColumnName(int column) const override;
 
-    virtual const char * getCellData( int row, int column ) const override; // возвращает результат запроса в виде char *
+    virtual const char * getCellData( int row, int column ) const override; // возвращает результат запроса в виде const char *
     virtual int getCellLength( int row, int column ) const override;
     
     virtual string getCell(int row, int column) const override; // Возвращает результат sql-запроса в формате QVariant
-    virtual vector< char > getCellAsByteArray (int row, int column) const override; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
+    virtual QByteArray getCellAsByteArray (int row, int column) const override; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
 
     virtual bool isEmpty(int row, int column) const override;
     virtual int getRowCount() const override;
