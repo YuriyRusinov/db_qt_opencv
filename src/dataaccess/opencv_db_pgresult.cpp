@@ -1,3 +1,8 @@
+/*
+#include <QBuffer>
+#include <QFile>
+#include <QDataStream>
+*/
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -49,11 +54,6 @@ const char * CVDbPgResult::getCellData( int row, int column ) const {
     pqxx::field fCell( m_res->at(row).at(column) );
     pqxx::binarystring res_pqxx ( fCell );
     return res_pqxx.get();
-    /*std::stringstream sFileName;
-    sFileName << "binary_file_data_" << row;
-    std::ofstream debFile(sFileName.str().c_str());
-    debFile << m_res->at(row).at(column).c_str();
-    return (m_res->at(row).at(column).c_str());*/
 } // возвращает результат запроса в виде const char *
 
 int CVDbPgResult::getCellLength( int row, int column ) const {
@@ -82,9 +82,15 @@ QByteArray CVDbPgResult::getCellAsByteArray (int row, int column) const {
     pqxx::field fCell( m_res->at(row).at(column) );
     pqxx::binarystring fCellB( fCell );
     pqxx::field::size_type nn = fCellB.size();//strlen((const char*)buffer);
-    //std::cerr << __PRETTY_FUNCTION__ << ' ' << nn << std::endl;
     QByteArray resbytes = QByteArray::fromRawData( fCellB.get(), nn);
+/*  
+    for Debug purposes
 
+    QFile fByteArr("ttt_by_pg.bin");
+    fByteArr.open( QBuffer::WriteOnly );
+    QDataStream fByteArrStr( &fByteArr );
+    fByteArrStr << resbytes;
+*/
     return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
 

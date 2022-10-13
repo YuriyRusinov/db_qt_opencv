@@ -104,8 +104,8 @@ void ImageTestMainWindow::insertImage() {
         return;
 
     QImage im(imageFileName);
-/*    im.save("ttt.jpg", "JPG");
-
+    im.save("ttt.jpg", "JPG");
+/*
     QByteArray ba;
     QBuffer bbb( &ba );
     bbb.open( QBuffer::WriteOnly );
@@ -122,6 +122,10 @@ void ImageTestMainWindow::insertImage() {
     pqxx::binarystring pqStr( pBa, ba.size() );
     qDebug() << __PRETTY_FUNCTION__ << ba.size() << ba.toStdString().size() << pqStr.size();
     QByteArray ba1 = QByteArray::fromRawData( pqStr.get(),  pqStr.size() );
+    QFile fByteArr("ttt_by.bin");
+    fByteArr.open( QBuffer::WriteOnly );
+    QDataStream fByteArrStr( &fByteArr );
+    fByteArrStr << ba1;
     QImage im2;
     bool isLoaded2 = im2.loadFromData( ba1 );
     qDebug() << __PRETTY_FUNCTION__ << isLoaded2 << ba1.size();
