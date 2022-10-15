@@ -32,6 +32,7 @@ public:
     
     virtual string getCell(int row, int column) const override; // Возвращает результат sql-запроса в формате QVariant
     virtual QByteArray getCellAsByteArray (int row, int column) const override; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
+    virtual pqxx::binarystring getCellAsBinaryString( int row, int column) const override;
 
     virtual bool isEmpty(int row, int column) const override;
     virtual int getRowCount() const override;

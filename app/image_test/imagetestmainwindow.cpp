@@ -106,6 +106,8 @@ void ImageTestMainWindow::insertImage() {
     QImage im(imageFileName);
     im.save("ttt.jpg", "JPG");
 /*
+ *   For debug
+ *
     QByteArray ba;
     QBuffer bbb( &ba );
     bbb.open( QBuffer::WriteOnly );

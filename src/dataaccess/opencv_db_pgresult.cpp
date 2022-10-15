@@ -1,8 +1,9 @@
-/*
+
 #include <QBuffer>
 #include <QFile>
 #include <QDataStream>
-*/
+#include <QtDebug>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -59,6 +60,7 @@ const char * CVDbPgResult::getCellData( int row, int column ) const {
 int CVDbPgResult::getCellLength( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return -1;
+
     pqxx::field fCell( m_res->at(row).at(column) );
     pqxx::binarystring res_pqxx ( fCell );
     return res_pqxx.size();
@@ -75,26 +77,31 @@ string CVDbPgResult::getCell(int row, int column) const {
     return pqxx::to_string(fCell);
 } // Возвращает результат sql-запроса в формате std::string
 
-QByteArray CVDbPgResult::getCellAsByteArray (int row, int column) const {
+QByteArray CVDbPgResult::getCellAsByteArray( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return QByteArray();
 
     pqxx::field fCell( m_res->at(row).at(column) );
-    pqxx::binarystring fCellB( fCell );
-    pqxx::field::size_type nn = fCellB.size();//strlen((const char*)buffer);
-    QByteArray resbytes = QByteArray::fromRawData( fCellB.get(), nn);
-/*  
-    for Debug purposes
-
-    QFile fByteArr("ttt_by_pg.bin");
-    fByteArr.open( QBuffer::WriteOnly );
-    QDataStream fByteArrStr( &fByteArr );
-    fByteArrStr << resbytes;
-*/
+    pqxx::binarystring fCellB = getCellAsBinaryString( row, column );
+    pqxx::binarystring fCellBB( fCell );
+    //qDebug() << __PRETTY_FUNCTION__ << (fCellB == fCellBB);
+    pqxx::field::size_type nn = getCellLength( row, column );//fCell.size();//strlen((const char*)buffer);
+    qDebug() << __PRETTY_FUNCTION__ << nn << fCellB.size() << fCell.size() << (fCellB == fCellBB);
+    const char* imBytes = fCellB.get();
+    QByteArray resbytes = QByteArray::fromRawData( imBytes, nn);
     return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
 
-bool CVDbPgResult::isEmpty(int row, int column) const {
+pqxx::binarystring CVDbPgResult::getCellAsBinaryString( int row, int column ) const {
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return pqxx::binarystring(nullptr, 0);
+
+    pqxx::field fCell( m_res->at(row).at(column) );
+    pqxx::binarystring fCellB( fCell );
+    return fCellB;
+}
+
+bool CVDbPgResult::isEmpty( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return true;
 
