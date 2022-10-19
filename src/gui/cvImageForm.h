@@ -9,7 +9,7 @@ namespace Ui {
 
 class cvImageForm : public QWidget {
 public:
-    cvImageForm( const QImage& image, QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
+    cvImageForm( qlonglong id=-1, const QString& imName=QString(), const QImage& image=QImage(), QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     virtual ~cvImageForm();
 
 private slots:
@@ -17,11 +17,14 @@ private slots:
     void saveImageToDb();
 
 signals:
-    void saveImage(const QImage&, QString);
+    void saveImage(const QImage&, QString, qlonglong);
 
 private:
     Ui::cv_image_form* _UI;
+    qlonglong m_id;
+    QString m_ImageName;
     QImage m_Image;
+
 private:
     Q_OBJECT
 };

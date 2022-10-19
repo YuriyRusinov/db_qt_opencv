@@ -11,7 +11,9 @@ public:
     dbWriter& operator=( const dbWriter& ) = delete;
     virtual ~dbWriter( );
 
-    int insertImage(const QImage& im, QString imName);
+    long long insertImage(const QImage& im, QString imName);
+    long long updateImage(const QImage& im, QString imName, qlonglong id);
+    long long delImage( qlonglong id );
 
 private:
     OpenCVDatabase* m_db;

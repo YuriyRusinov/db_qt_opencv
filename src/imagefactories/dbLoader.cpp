@@ -19,7 +19,7 @@ dbLoader::~dbLoader() {
 
 }
 
-QMap<long, dbImages> dbLoader::loadImages() {
+QMap<long, dbImages> dbLoader::loadImages() const {
     QString SQL("select * from GetImages(null);");
     CVDbResult * res = m_db->execute( SQL.toStdString().c_str() );
 
@@ -54,5 +54,48 @@ QMap<long, dbImages> dbLoader::loadImages() {
         qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
         resImages.insert(id, dbImages(id, name, im));
     }
+    delete res;
     return resImages;
+}
+
+dbImages dbLoader::loadImage( qlonglong id ) const {
+    QString SQL = QString("select * from GetImages( %1 );").arg( id );
+    CVDbResult * res = m_db->execute( SQL.toStdString().c_str() );
+
+    if( res == nullptr || res->getRowCount() != 1 ) {
+        if( res )
+            delete res;
+        return dbImages();
+    }
+    int n = res->getRowCount();
+    dbImages resImage;
+    int i = 0;
+    long id0 = res->getCellAsInt(i, 0);
+    if( id0 != id ) {
+        delete res;
+        return dbImages();
+    }
+    QString name = QString::fromStdString( res->getCellAsString(i, 1) );
+    pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 2);
+    const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
+    int nn = res->getCellLength(i, 2);//imageBytes.size();
+    QByteArray imageBytes = QByteArray::fromRawData( imBytes, nn );
+    QByteArray ba = res->getCellAsByteArray(i, 2);
+    QByteArray bDiff;
+    QByteArray cDiff;
+    for(int ii=0; ii<nn; ii++) {
+        char c0 = imageBytes[ii];
+        char c1 = ba[ii];
+        if(c1 != c0) {
+            bDiff.append(c0);
+            cDiff.append(c1);
+        }
+    }
+    qDebug() << __PRETTY_FUNCTION__ << imageBytes.compare( ba ) << (imageBytes == ba) << bDiff << cDiff;
+    QImage im;
+    bool isLoaded = im.loadFromData( imageBytes );
+    qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
+    resImage = dbImages(id, name, im);
+    delete res;
+    return resImage;
 }

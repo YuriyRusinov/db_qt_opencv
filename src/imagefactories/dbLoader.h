@@ -14,7 +14,8 @@ public:
     dbLoader& operator=( const dbLoader& dbl ) = delete;
     virtual ~dbLoader();
 
-    QMap<long, dbImages> loadImages();
+    QMap<long, dbImages> loadImages() const;
+    dbImages loadImage( qlonglong id ) const;
 
     friend class dbOpenCvS;
 private:

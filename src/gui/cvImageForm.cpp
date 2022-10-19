@@ -4,11 +4,14 @@
 #include "cvImageForm.h"
 #include "ui_cv_image_form.h"
 
-cvImageForm::cvImageForm( const QImage& image, QWidget* parent, Qt::WindowFlags flags )
+cvImageForm::cvImageForm( qlonglong id, const QString& imName, const QImage& image, QWidget* parent, Qt::WindowFlags flags )
     : QWidget( parent, flags ),
+    m_id( id ),
+    m_ImageName( imName ),
     m_Image( image ),
     _UI( new Ui::cv_image_form ) {
     _UI->setupUi( this );
+    _UI->lEImageName->setText( m_ImageName );
 
     QPixmap pix = QPixmap::fromImage(m_Image);
     _UI->lImage->setPixmap(pix);
@@ -35,5 +38,5 @@ void cvImageForm::loadImageFromFile() {
 
 void cvImageForm::saveImageToDb() {
     QString imName = _UI->lEImageName->text();
-    emit saveImage( m_Image, imName );
+    emit saveImage( m_Image, imName, m_id );
 }

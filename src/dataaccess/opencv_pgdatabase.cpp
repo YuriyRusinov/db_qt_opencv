@@ -82,7 +82,12 @@ CVDbResult * OpenCVPgDatabase::execute( const char* query ) const {
     string sQuery( query );
 
     pqxx::result* res = new pqxx::result (_dbWork->exec( sQuery ));
+    if( res == nullptr ) {
+        delete _dbWork;
+        return nullptr;
+    }
     CVDbResult * pRes = new CVDbPgResult ( res );
+    _dbWork->commit();
 
     return pRes;
 }
@@ -129,10 +134,22 @@ CVDbResult * OpenCVPgDatabase::execParams(
     std::vector< pqxx::binarystring > params;
     for(int i=0; i<nParams; i++) {
         switch( paramTypes[i] ) {
+            case CVDbResult::DataType::dtInt8 :
+            case CVDbResult::DataType::dtInt4 :
+            case CVDbResult::DataType::dtInt2 : {
+                long long idValue (atoll( paramValues[i] ));
+                pqxx::binarystring vstr ( pqxx::to_string(idValue) );//, sizeof(long long) );
+                //cerr << __PRETTY_FUNCTION__ << vstr.get() << ' ' << idValue << endl;
+                params.push_back( vstr );
+                break;
+            }
             case CVDbResult::DataType::dtVarchar : default: {
                 char* paramData = new char [paramLengths[i]];
                 strncpy( paramData, paramValues[i], paramLengths[i]);
-                pqxx::binarystring vchar( paramData, paramLengths[i]);
+                cerr << __PRETTY_FUNCTION__ << ' ' << paramData << endl;
+                string esc_str = _dbConnection->esc(paramData);
+                cerr << __PRETTY_FUNCTION__ << ' ' << esc_str << endl;
+                pqxx::binarystring vchar( esc_str.c_str()/*paramData*/, paramLengths[i]);
                 params.push_back( vchar );
                 delete [] paramData;
                 break;

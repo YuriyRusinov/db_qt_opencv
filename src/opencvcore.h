@@ -5,6 +5,7 @@
 
 #include <memory>
 
+class QAbstractItemModel;
 class QSettings;
 
 class OpenCVDatabase;
@@ -16,16 +17,22 @@ using std::shared_ptr;
 
 class OpenCVCore : public QObject {
 public:
-    bool GUIConnect(QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags());
+    bool GUIConnect( QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
+    QWidget* GUIViewImages( QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
 
     OpenCVDatabase* getDb() const { return m_Db; }
     shared_ptr< dbLoader > getDbLoader() const;
     shared_ptr< dbWriter > getDbWriter() const;
 
-    void loadImage( const QImage& im, QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
+    void loadImage( long long id=-1, QString name=QString(), const QImage& im=QImage(), QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
 
 private slots:
-    void saveImageToDb( const QImage& im, QString imName );
+    void saveImageToDb( const QImage& im, QString imName, qlonglong id );
+    void insertImageToDb( );
+    void updateImageInDb( qlonglong id );
+    void deleteImageFromDb( qlonglong id );
+
+    void refreshModel( QAbstractItemModel* imModel );
 
 signals:
     void setWidget( QWidget* w );

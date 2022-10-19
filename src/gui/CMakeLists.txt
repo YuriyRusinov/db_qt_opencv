@@ -36,16 +36,19 @@ link_directories(${CMAKE_SOURCE_DIR}/src)
 set(HEADERS
     dbLoginForm.h
     cvImageForm.h
+    cvImageListForm.h
 )
 
 set(SOURCES
     dbLoginForm.cpp
     cvImageForm.cpp
+    cvImageListForm.cpp
 )
 
 set(FORMS
     db_login_form.ui
     cv_image_form.ui
+    cv_image_list_form.ui
 )
 
 set(RESOURCES

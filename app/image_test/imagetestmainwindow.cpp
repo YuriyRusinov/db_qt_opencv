@@ -66,27 +66,8 @@ void ImageTestMainWindow::close() {
 
 void ImageTestMainWindow::viewImages() {
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
-    shared_ptr< dbLoader > dbl = cvCore->getDbLoader();
-    QMap<long, dbImages> images = dbl->loadImages();
-    QTreeView* tvImages = new QTreeView;
-    QAbstractItemModel * imModel = new QStandardItemModel( images.size(), 3 );
-    tvImages->setModel( imModel );
-    imModel->setHeaderData( 0, Qt::Horizontal, tr("ID"), Qt::DisplayRole );
-    imModel->setHeaderData( 1, Qt::Horizontal, tr("Image name"), Qt::DisplayRole );
-    imModel->setHeaderData( 2, Qt::Horizontal, tr("Image"), Qt::DisplayRole );
-    int i=0;
-    for(QMap<long, dbImages>::const_iterator pim = images.constBegin();
-                                             pim != images.constEnd();
-                                             pim++ ) {
-        imModel->setData( imModel->index(i, 0), QVariant((qlonglong)pim.key()), Qt::DisplayRole );
-        imModel->setData( imModel->index(i, 1), pim.value().getName(), Qt::DisplayRole );
-        QImage im = pim.value().getImage();
-        imModel->setData( imModel->index(i, 2), QVariant(im), Qt::DecorationRole );
-        i++;
-    }
-    qDebug() << __PRETTY_FUNCTION__ << imModel->rowCount();
-
-    addSubWindow( tvImages );
+    cvCore->GUIViewImages();
+//    addSubWindow( tvImages );
 }
 
 void ImageTestMainWindow::init() {
@@ -137,7 +118,7 @@ void ImageTestMainWindow::insertImage() {
     tstIm.close();
 */
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
-    cvCore->loadImage( im );
+    cvCore->loadImage( -1, QString(), im );
 }
 
 void ImageTestMainWindow::addSubWindow( QWidget* w ) {

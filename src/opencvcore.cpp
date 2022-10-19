@@ -1,5 +1,7 @@
 #include <QDialog>
 #include <QSettings>
+#include <QAbstractItemModel>
+#include <QStandardItemModel>
 #include <QtDebug>
 #include <dbLoginForm.h>
 
@@ -7,6 +9,7 @@
 #include <dbWriter.h>
 #include <opencv_database.h>
 #include <cvImageForm.h>
+#include <cvImageListForm.h>
 #include "opencvcore.h"
 
 using std::make_unique;
@@ -68,13 +71,72 @@ shared_ptr< dbWriter > OpenCVCore::getDbWriter() const {
     return m_databaseWriter ;
 }
 
-void OpenCVCore::loadImage( const QImage& im, QWidget* parent, Qt::WindowFlags flags ) {
-    cvImageForm* imWidget = new cvImageForm(im, parent, flags);
+void OpenCVCore::loadImage( long long id, QString name, const QImage& im, QWidget* parent, Qt::WindowFlags flags ) {
+    cvImageForm* imWidget = new cvImageForm(id, name, im, parent, flags);
     connect( imWidget, &cvImageForm::saveImage, this, &OpenCVCore::saveImageToDb );
     emit setWidget( imWidget );
 }
 
-void OpenCVCore::saveImageToDb( const QImage& im, QString imName ) {
-    int imId = m_databaseWriter->insertImage( im, imName );
+void OpenCVCore::saveImageToDb( const QImage& im, QString imName, qlonglong id ) {
+    qlonglong imId;
+    if( id < 0 ) {
+        imId = m_databaseWriter->insertImage( im, imName );
+    }
+    else {
+        imId = m_databaseWriter->updateImage( im, imName, id);
+    }
     qDebug() << __PRETTY_FUNCTION__ << imId;
+}
+
+QWidget* OpenCVCore::GUIViewImages( QWidget* parent, Qt::WindowFlags flags ) {
+    shared_ptr< dbLoader > dbl = m_databaseLoader;
+    QMap<long, dbImages> images = dbl->loadImages();
+    cvImageListForm* imListForm = new cvImageListForm( parent, flags );
+
+    connect( imListForm, &cvImageListForm::insertImage, this, &OpenCVCore::insertImageToDb );
+    connect( imListForm, &cvImageListForm::updateImage, this, &OpenCVCore::updateImageInDb );
+    connect( imListForm, &cvImageListForm::deleteImage, this, &OpenCVCore::deleteImageFromDb );
+    connect( imListForm, &cvImageListForm::refreshModel, this, &OpenCVCore::refreshModel );
+
+    QAbstractItemModel * imModel = new QStandardItemModel( images.size(), 3 );
+    imListForm->setImagesModel( imModel );
+    imModel->setHeaderData( 0, Qt::Horizontal, tr("ID"), Qt::DisplayRole );
+    imModel->setHeaderData( 1, Qt::Horizontal, tr("Image name"), Qt::DisplayRole );
+    imModel->setHeaderData( 2, Qt::Horizontal, tr("Image"), Qt::DisplayRole );
+    int i=0;
+    for(QMap<long, dbImages>::const_iterator pim = images.constBegin();
+                                             pim != images.constEnd();
+                                             pim++ ) {
+        imModel->setData( imModel->index(i, 0), QVariant((qlonglong)pim.key()), Qt::DisplayRole );
+        imModel->setData( imModel->index(i, 0), QVariant((qlonglong)pim.key()), Qt::UserRole );
+        imModel->setData( imModel->index(i, 1), pim.value().getName(), Qt::DisplayRole );
+        QImage im = pim.value().getImage();
+        imModel->setData( imModel->index(i, 2), QVariant(im), Qt::DecorationRole );
+        i++;
+    }
+    qDebug() << __PRETTY_FUNCTION__ << imModel->rowCount();
+    emit setWidget( imListForm );
+    return imListForm;
+}
+
+void OpenCVCore::insertImageToDb( ) {
+    qDebug() << __PRETTY_FUNCTION__;
+    loadImage( );
+}
+
+void OpenCVCore::updateImageInDb( qlonglong id ) {
+    qDebug() << __PRETTY_FUNCTION__ << id;
+    dbImages wim = m_databaseLoader->loadImage(id);
+    loadImage( id, wim.getName(), wim.getImage() );
+}
+
+void OpenCVCore::deleteImageFromDb( qlonglong id ) {
+    long long idd = m_databaseWriter->delImage( id );
+    qDebug() << __PRETTY_FUNCTION__ << id << idd;
+}
+
+void OpenCVCore::refreshModel( QAbstractItemModel* imModel ) {
+    if( imModel == nullptr )
+        return;
+    qDebug() << __PRETTY_FUNCTION__;
 }
