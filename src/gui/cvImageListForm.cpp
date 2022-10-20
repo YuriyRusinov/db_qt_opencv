@@ -82,5 +82,5 @@ void cvImageListForm::delImage( ) {
 
 void cvImageListForm::refreshImages( ) {
     qDebug() << __PRETTY_FUNCTION__;
-    emit refreshModel( _UI->tvImages->model() );
+    emit refreshModel( );
 }

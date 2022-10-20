@@ -29,6 +29,7 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/dataaccess
+                    ${CMAKE_SOURCE_DIR}/src/imagefactories
                     )
 
 link_directories(${CMAKE_SOURCE_DIR}/src)
@@ -37,12 +38,14 @@ set(HEADERS
     dbLoginForm.h
     cvImageForm.h
     cvImageListForm.h
+    cvImageModel.h
 )
 
 set(SOURCES
     dbLoginForm.cpp
     cvImageForm.cpp
     cvImageListForm.cpp
+    cvImageModel.cpp
 )
 
 set(FORMS

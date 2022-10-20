@@ -32,7 +32,7 @@ private slots:
     void updateImageInDb( qlonglong id );
     void deleteImageFromDb( qlonglong id );
 
-    void refreshModel( QAbstractItemModel* imModel );
+    void refreshModel( );
 
 signals:
     void setWidget( QWidget* w );

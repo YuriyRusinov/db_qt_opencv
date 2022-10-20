@@ -5,7 +5,8 @@
 
 class dbImages {
 public:
-    dbImages(long id=-1, QString name=QString(), const QImage& im=QImage());
+    dbImages(long long id=-1, QString name=QString(), const QImage& im=QImage());
+    ~dbImages() {};
 
     bool operator< (const dbImages& im1) const { return imageId < im1.imageId; }
 
@@ -18,7 +19,7 @@ public:
     const QImage& getImage() const { return image; }
     void setImage( const QImage& im ) { image = im; }
 private:
-    long imageId;
+    long long imageId;
     QString imageName;
     QImage image;
 };

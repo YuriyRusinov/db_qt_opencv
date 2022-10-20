@@ -29,7 +29,7 @@ signals:
     void updateImage( qlonglong id );
     void deleteImage( qlonglong id );
 
-    void refreshModel( QAbstractItemModel* imModel );
+    void refreshModel( );
 private:
     Ui::cv_image_list_form* _UI;
 
