@@ -17,9 +17,14 @@ public:
 
 private slots:
     void dbConnect();
+    void dbDisconnect();
     void close();
+
     void viewImages();
     void insertImage();
+    void importFromDir();
+    void importFromCamera();
+    void importFromURL();
 
     void setActionsEnable( bool enable );
     void addSubWindow( QWidget* w );

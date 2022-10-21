@@ -28,6 +28,7 @@
      <string>&amp;DB</string>
     </property>
     <addaction name="act_Connect"/>
+    <addaction name="act_Disconnect"/>
     <addaction name="separator"/>
     <addaction name="act_Quit"/>
    </widget>
@@ -35,8 +36,18 @@
     <property name="title">
      <string>&amp;Images</string>
     </property>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import ...</string>
+     </property>
+     <addaction name="actionfrom_Directory"/>
+     <addaction name="actionfrom_Camera"/>
+     <addaction name="actionfrom_URL"/>
+    </widget>
     <addaction name="actInsert_image"/>
     <addaction name="actionView_images"/>
+    <addaction name="separator"/>
+    <addaction name="menuImport"/>
    </widget>
    <addaction name="menu_DB"/>
    <addaction name="menu_Images"/>
@@ -63,6 +74,26 @@
   <action name="actionView_images">
    <property name="text">
     <string>View images ...</string>
+   </property>
+  </action>
+  <action name="actionfrom_Directory">
+   <property name="text">
+    <string>from Directory</string>
+   </property>
+  </action>
+  <action name="actionfrom_Camera">
+   <property name="text">
+    <string>from Camera</string>
+   </property>
+  </action>
+  <action name="actionfrom_URL">
+   <property name="text">
+    <string>from URL</string>
+   </property>
+  </action>
+  <action name="act_Disconnect">
+   <property name="text">
+    <string>&amp;Disconnect</string>
    </property>
   </action>
  </widget>

@@ -131,3 +131,8 @@ void OpenCVCore::refreshModel( ) {
     QAbstractItemModel * imModel = new cvImageModel( images );
     cvForm->setImagesModel( imModel );
 }
+
+void OpenCVCore::dbDisconnect() {
+    if( m_Db != nullptr && m_Db->connected() )
+        m_Db->disconnect();
+}

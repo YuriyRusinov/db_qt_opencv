@@ -25,6 +25,7 @@ public:
     shared_ptr< dbWriter > getDbWriter() const;
 
     void loadImage( long long id=-1, QString name=QString(), const QImage& im=QImage(), QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
+    void dbDisconnect();
 
 private slots:
     void saveImageToDb( const QImage& im, QString imName, qlonglong id );
