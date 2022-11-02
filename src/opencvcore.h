@@ -19,6 +19,7 @@ class OpenCVCore : public QObject {
 public:
     bool GUIConnect( QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     QWidget* GUIViewImages( QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
+    QWidget* GUIViewTypes( QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
 
     OpenCVDatabase* getDb() const { return m_Db; }
     shared_ptr< dbLoader > getDbLoader() const;

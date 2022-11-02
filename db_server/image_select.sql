@@ -1,4 +1,7 @@
+drop type if exists image_res cascade;
 create type image_res as (imageId bigint,
+                          imageTypeId bigint,
+                          imageTypeName varchar,
                           imageName varchar,
                           imageBytes bytea
                           );
@@ -10,11 +13,11 @@ declare
     r image_res%rowtype;
     query varchar;
 begin
-    query := E'select id, name, image_bytes from images';
+    query := E'select i.id, i.name, t.id, t.type_name, i.image_bytes from aircraft_images i inner join aircraft_types t on( i.id_type = t.id ';
     if(imgId is not null) then
-        query := query || E' where id=' || imgId || E' order by 1;';
+        query := query || E' and i.id=' || imgId || E') order by 1;';
     else
-        query := query || E' order by 1;';
+        query := query || E') order by 1;';
     end if;
 
     for r in

@@ -11,6 +11,8 @@
 #include <cvImageForm.h>
 #include <cvImageListForm.h>
 #include <cvImageModel.h>
+#include <AircraftTypeListForm.h>
+#include <AircraftTypeModel.h>
 #include "opencvcore.h"
 
 using std::make_unique;
@@ -91,7 +93,7 @@ void OpenCVCore::saveImageToDb( const QImage& im, QString imName, qlonglong id )
 
 QWidget* OpenCVCore::GUIViewImages( QWidget* parent, Qt::WindowFlags flags ) {
     shared_ptr< dbLoader > dbl = m_databaseLoader;
-    QMap<long long, shared_ptr<dbImages>> images = dbl->loadImages();
+    QMap<long long, shared_ptr<AircraftImages>> images = dbl->loadImages();
     cvImageListForm* imListForm = new cvImageListForm( parent, flags );
 
     connect( imListForm, &cvImageListForm::insertImage, this, &OpenCVCore::insertImageToDb );
@@ -113,7 +115,7 @@ void OpenCVCore::insertImageToDb( ) {
 
 void OpenCVCore::updateImageInDb( qlonglong id ) {
     qDebug() << __PRETTY_FUNCTION__ << id;
-    shared_ptr< dbImages > wim = m_databaseLoader->loadImage(id);
+    shared_ptr< AircraftImages > wim = m_databaseLoader->loadImage(id);
     loadImage( id, wim->getName(), wim->getImage() );
 }
 
@@ -127,7 +129,7 @@ void OpenCVCore::refreshModel( ) {
     if( cvForm == nullptr )
         return;
     qDebug() << __PRETTY_FUNCTION__;
-    QMap<long long, shared_ptr<dbImages>> images = m_databaseLoader->loadImages();
+    QMap<long long, shared_ptr<AircraftImages>> images = m_databaseLoader->loadImages();
     QAbstractItemModel * imModel = new cvImageModel( images );
     cvForm->setImagesModel( imModel );
 }
@@ -135,4 +137,16 @@ void OpenCVCore::refreshModel( ) {
 void OpenCVCore::dbDisconnect() {
     if( m_Db != nullptr && m_Db->connected() )
         m_Db->disconnect();
+}
+
+QWidget* OpenCVCore::GUIViewTypes( QWidget* parent, Qt::WindowFlags flags ) {
+    qDebug() << __PRETTY_FUNCTION__;
+    map<long long, shared_ptr<AircraftType>> aircraftTypes = m_databaseLoader->loadTypes();
+    AircraftTypeListForm* airTypesForm = new AircraftTypeListForm( parent, flags );
+    airTypesForm->viewToolButtons( true );
+    AircraftTypeModel* aTypesMod = new AircraftTypeModel( aircraftTypes );
+    airTypesForm->setModel( aTypesMod );
+    emit setWidget( airTypesForm );
+
+    return airTypesForm;
 }

@@ -30,11 +30,13 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/dataaccess
+                    ${CMAKE_SOURCE_DIR}/src/classificator
                     ${CMAKE_SOURCE_DIR}/src/imagefactories
                     )
 
 link_directories(${CMAKE_SOURCE_DIR}/src
                  ${CMAKE_SOURCE_DIR}/src/dataaccess
+                 ${CMAKE_SOURCE_DIR}/src/classificator
                  ${CMAKE_SOURCE_DIR}/src/imagefactories
 )
 
@@ -58,7 +60,7 @@ qt5_wrap_ui(UIS_HDRS ${FORMS} )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${UIS_HDRS} ${RESOURCES}  )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_opencv_src ${imagefactories_LIBS})
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_opencv_src ${imagefactories_LIBS} classificator)
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin

@@ -20,6 +20,7 @@ private slots:
     void dbDisconnect();
     void close();
 
+    void viewTypes();
     void viewImages();
     void insertImage();
     void importFromDir();

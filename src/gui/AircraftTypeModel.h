@@ -1,17 +1,19 @@
 #pragma once
 
-#include <memory>
 #include <QAbstractItemModel>
-#include <QMap>
 
+#include <map>
+#include <memory>
+
+using std::map;
 using std::shared_ptr;
 
-class AircraftImages;
+class AircraftType;
 
-class cvImageModel : public QAbstractItemModel {
+class AircraftTypeModel : public QAbstractItemModel {
 public:
-    cvImageModel( const QMap<long long, shared_ptr< AircraftImages >>& cvIms = QMap<long long, shared_ptr<AircraftImages>>(), QObject *parent = nullptr );
-    virtual ~cvImageModel();
+    AircraftTypeModel( const map< long long, shared_ptr< AircraftType > >& airTypes, QObject* parent=nullptr );
+    virtual ~AircraftTypeModel();
 
     virtual QModelIndex	index( int row, int column, const QModelIndex &parent = QModelIndex() ) const override;
     virtual QModelIndex	parent( const QModelIndex& index ) const override;
@@ -21,7 +23,7 @@ public:
     virtual QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;
 
 private:
-    QMap<long long, shared_ptr< AircraftImages >> _images;
+    map<long long, shared_ptr< AircraftType >> m_aircraftTypes;
 
 private:
     Q_OBJECT

@@ -32,9 +32,9 @@
     <addaction name="separator"/>
     <addaction name="act_Quit"/>
    </widget>
-   <widget class="QMenu" name="menu_Images">
+   <widget class="QMenu" name="menu_Aircrafts">
     <property name="title">
-     <string>&amp;Images</string>
+     <string>&amp;Aircrafts</string>
     </property>
     <widget class="QMenu" name="menuImport">
      <property name="title">
@@ -46,11 +46,13 @@
     </widget>
     <addaction name="actInsert_image"/>
     <addaction name="actionView_images"/>
+    <addaction name="actAdd_aircraft_type"/>
+    <addaction name="actView_aircraft_types"/>
     <addaction name="separator"/>
     <addaction name="menuImport"/>
    </widget>
    <addaction name="menu_DB"/>
-   <addaction name="menu_Images"/>
+   <addaction name="menu_Aircrafts"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="act_Connect">
@@ -94,6 +96,16 @@
   <action name="act_Disconnect">
    <property name="text">
     <string>&amp;Disconnect</string>
+   </property>
+  </action>
+  <action name="actAdd_aircraft_type">
+   <property name="text">
+    <string>Add aircraft type</string>
+   </property>
+  </action>
+  <action name="actView_aircraft_types">
+   <property name="text">
+    <string>View aircraft types</string>
    </property>
   </action>
  </widget>

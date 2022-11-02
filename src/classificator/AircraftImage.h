@@ -3,12 +3,12 @@
 #include <QString>
 #include <QImage>
 
-class dbImages {
+class AircraftImages {
 public:
-    dbImages(long long id=-1, QString name=QString(), const QImage& im=QImage());
-    ~dbImages() {};
+    AircraftImages(long long id=-1, QString name=QString(), const QImage& im=QImage());
+    ~AircraftImages() {};
 
-    bool operator< (const dbImages& im1) const { return imageId < im1.imageId; }
+    bool operator< (const AircraftImages& im1) const { return imageId < im1.imageId; }
 
     long getId() const { return imageId; }
     void setId( long id ) { imageId = id; }

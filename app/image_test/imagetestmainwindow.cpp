@@ -22,7 +22,7 @@
 #include <opencv_db_result.h>
 #include <dbLoader.h>
 #include <dbWriter.h>
-#include <dbImageClass.h>
+#include <AircraftImage.h>
 
 #include "imagetestmainwindow.h"
 #include "ui_image_test_main_window.h"
@@ -43,6 +43,7 @@ ImageTestMainWindow::ImageTestMainWindow(QWidget* parent, Qt::WindowFlags flags)
 
     connect( _UI->act_Connect, &QAction::triggered, this, &ImageTestMainWindow::dbConnect );
     connect( _UI->act_Disconnect, &QAction::triggered, this, &ImageTestMainWindow::dbDisconnect );
+    connect( _UI->actView_aircraft_types, &QAction::triggered, this, &ImageTestMainWindow::viewTypes );
     connect( _UI->actionfrom_Directory, &QAction::triggered, this, &ImageTestMainWindow::importFromDir );
     connect( _UI->actionfrom_Camera, &QAction::triggered, this, &ImageTestMainWindow::importFromCamera );
     connect( _UI->actionfrom_URL, &QAction::triggered, this, &ImageTestMainWindow::importFromURL );
@@ -87,8 +88,10 @@ void ImageTestMainWindow::init() {
 void ImageTestMainWindow::setActionsEnable( bool enable ) {
     _UI->actInsert_image->setEnabled( enable );
     _UI->actionView_images->setEnabled( enable );
+    _UI->actAdd_aircraft_type->setEnabled( enable );
     _UI->menuImport->setEnabled( enable );
     _UI->act_Disconnect->setEnabled( enable );
+    _UI->actView_aircraft_types->setEnabled( enable );
 }
 
 void ImageTestMainWindow::insertImage() {
@@ -170,4 +173,9 @@ void ImageTestMainWindow::importFromCamera() {
 
 void ImageTestMainWindow::importFromURL() {
     qDebug() << __PRETTY_FUNCTION__;
+}
+
+void ImageTestMainWindow::viewTypes() {
+    OpenCVCore* cvCore = _mDbOpenCv->getCore();
+    cvCore->GUIViewTypes();
 }

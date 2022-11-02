@@ -1,0 +1,14 @@
+BASE=aircrafts
+
+# user that will be superuser of database server
+USER=yury
+
+# host of database
+DB_HOST=192.168.0.38
+
+# port of DynamicDocs Server databases (5432 is the defaults)
+DB_PORT=5432
+
+#encoding of the DynamicDocs Server and all its databases
+#UTF8 recomended
+ENCODING=UTF8

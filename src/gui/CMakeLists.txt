@@ -29,16 +29,20 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/dataaccess
+                    ${CMAKE_SOURCE_DIR}/src/classificator
                     ${CMAKE_SOURCE_DIR}/src/imagefactories
                     )
 
-link_directories(${CMAKE_SOURCE_DIR}/src)
+link_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/classificator)
 
 set(HEADERS
     dbLoginForm.h
     cvImageForm.h
     cvImageListForm.h
     cvImageModel.h
+    AircraftTypeForm.h
+    AircraftTypeListForm.h
+    AircraftTypeModel.h
 )
 
 set(SOURCES
@@ -46,12 +50,17 @@ set(SOURCES
     cvImageForm.cpp
     cvImageListForm.cpp
     cvImageModel.cpp
+    AircraftTypeForm.cpp
+    AircraftTypeListForm.cpp
+    AircraftTypeModel.cpp
 )
 
 set(FORMS
     db_login_form.ui
     cv_image_form.ui
     cv_image_list_form.ui
+    aircraft_type_form.ui
+    aircraft_type_list_form.ui
 )
 
 set(RESOURCES
@@ -59,6 +68,6 @@ set(RESOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${RESOURCES}  )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} )
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} classificator)
 
 

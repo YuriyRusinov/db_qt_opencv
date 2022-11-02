@@ -20,6 +20,7 @@ find_package(PkgConfig REQUIRED)
 find_package( OpenCV REQUIRED )
 
 add_subdirectory(dataaccess)
+add_subdirectory(classificator)
 add_subdirectory(imagefactories)
 add_subdirectory(gui)
 
@@ -32,6 +33,7 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${QWT_INCLUDE_DIRS}
                     ${OpenCV_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR}/dataaccess
+                    ${CMAKE_CURRENT_SOURCE_DIR}/classificator
                     ${CMAKE_CURRENT_SOURCE_DIR}/imagefactories
                     ${CMAKE_CURRENT_SOURCE_DIR}/gui
                    )
@@ -39,6 +41,7 @@ include_directories(${PROJECT_SOURCE_DIR}
 link_directories(${CMAKE_SOURCE_DIR}/src)
 
 link_directories(${CMAKE_SOURCE_DIR}/src/dataaccess)
+link_directories(${CMAKE_SOURCE_DIR}/src/classificator)
 link_directories(${CMAKE_SOURCE_DIR}/src/imagefactories)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/gui)
 

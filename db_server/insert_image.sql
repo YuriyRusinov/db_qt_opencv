@@ -5,8 +5,8 @@ declare
     imName alias for $1;
     imageBytes alias for $2;
 begin
-    select into idImage nextval('images_id_seq'::regclass);
-    insert into images (id, name, image_bytes) values (idImage, imName, imageBytes);
+    select into idImage nextval('aircraft_images_id_seq'::regclass);
+    insert into aircraft_images (id, name, image_bytes) values (idImage, imName, imageBytes);
 
     return idImage;
 end
@@ -20,7 +20,7 @@ declare
     imageName alias for $2;
     imageBytes alias for $3;
 begin
-    update images set name=imageName, image_bytes=imageBytes where id=idImage;
+    update aircraft_images set name=imageName, image_bytes=imageBytes where id=idImage;
     return idImage;
 end
 $BODY$
@@ -31,7 +31,7 @@ $BODY$
 declare
     idImage alias for $1;
 begin
-    delete from images where id=idImage;
+    delete from aircraft_images where id=idImage;
     return idImage;
 end
 $BODY$

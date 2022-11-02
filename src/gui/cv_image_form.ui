@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>452</width>
-    <height>385</height>
+    <height>407</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="4">
     <widget class="QLabel" name="lImage">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -27,7 +27,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="0" column="4">
     <layout class="QVBoxLayout" name="buttonsLayout">
      <item>
       <widget class="QToolButton" name="tbLoadImage">
@@ -58,8 +58,8 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+   <item row="1" column="0" colspan="4">
+    <layout class="QHBoxLayout" name="hNameLayout">
      <item>
       <widget class="QLabel" name="lImageName">
        <property name="text">
@@ -74,6 +74,34 @@
       <widget class="QLineEdit" name="lEImageName"/>
      </item>
     </layout>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="lAircraftType">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="lEType">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QToolButton" name="tbClear">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QToolButton" name="tbSelect">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

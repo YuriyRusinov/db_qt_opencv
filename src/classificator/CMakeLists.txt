@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(imagefactories VERSION 1.0)
+project(classificator VERSION 1.0)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -23,29 +23,26 @@ find_package( OpenCV REQUIRED )
 
 include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
-                    ${Qt5Widgets_INCLUDE_DIRS}
                     ${Qt5Core_INCLUDE_DIRS}
                     ${Qt5Gui_INCLUDE_DIRS}
                     ${Qt5Network_INCLUDE_DIRS}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/dataaccess
-                    ${CMAKE_SOURCE_DIR}/src/classificator
                     )
 
 link_directories(${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_SOURCE_DIR}/src/dataaccess)
-link_directories(${CMAKE_SOURCE_DIR}/src/classificator)
 link_directories(${CMAKE_SOURCE_DIR}/src/gui)
 
 set(HEADERS
-    dbLoader.h
-    dbWriter.h
+    AircraftType.h
+    AircraftImage.h
 )
 
 set(SOURCES
-    dbLoader.cpp
-    dbWriter.cpp
+    AircraftType.cpp
+    AircraftImage.cpp
 )
 
 set(FORMS
@@ -56,6 +53,6 @@ set(RESOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${RESOURCES}  )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_data_access classificator)
+target_link_libraries(${PROJECT_NAME} Qt5::Core ${QWT_LIBRARIES} ${OPENCV_LIBRARIES} db_data_access )
 
 
