@@ -172,3 +172,42 @@ map< long long, shared_ptr< AircraftType > > dbLoader::loadTypes() const {
     delete res;
     return resTypes;
 }
+
+shared_ptr< AircraftType > dbLoader::loadType( long long idType ) const {
+    QString SQL = QString("select * from GetType( %1 );").arg(idType);
+    shared_ptr< AircraftType > resType = nullptr;
+    CVDbResult * res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch(pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return resType;
+    }
+
+    if( res == nullptr || res->getRowCount() != 1 ) {
+        if( res )
+            delete res;
+        return resType;
+    }
+    int n = res->getRowCount();
+    int i=0;
+    long long id = res->getCellAsInt64(i, 0);
+    long long idParent = res->getCellAsInt64(i, 1);
+    QString tName = QString::fromStdString( res->getCellAsString(i, 2) );
+    QString tDesc = QString::fromStdString( res->getCellAsString(i, 3) );
+    qDebug() << __PRETTY_FUNCTION__ << id << idParent << tName << tDesc;
+    if( idParent == 0 ) {
+        resType = make_shared< AircraftType >( id, tName, tDesc );
+    }
+    else {
+        shared_ptr< AircraftType > parentType = loadType( idParent );//( currentType );
+        resType = make_shared< AircraftType > ( id, tName, tDesc );
+        resType->setParent( parentType );
+    }
+
+    delete res;
+    return resType;
+}

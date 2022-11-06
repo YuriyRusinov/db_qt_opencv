@@ -143,6 +143,7 @@ void ImageTestMainWindow::addSubWindow( QWidget* w ) {
     QMdiSubWindow * mdiW = _mMdiArea->addSubWindow( w );
     mdiW->setAttribute( Qt::WA_DeleteOnClose );
     w->show();
+    mdiW->setAttribute( Qt::WA_DeleteOnClose );
 }
 
 void ImageTestMainWindow::importFromDir() {

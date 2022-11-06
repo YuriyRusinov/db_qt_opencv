@@ -41,6 +41,30 @@ end
 $BODY$
 language 'plpgsql';
 
+create or replace function GetType(bigint) returns setof aircraft_type as
+$BODY$
+declare
+    id alias for $1;
+
+    query varchar;
+    cnt integer;
+
+    r aircraft_type%rowtype;
+    rr aircraft_type%rowtype;
+begin
+    
+    query := E'select id, id_parent, type_name, type_description from aircraft_types where id=' || id || E' order by 1';
+    for r in
+        execute query
+    loop
+        return next r;
+    end loop;
+
+    return;
+end
+$BODY$
+language 'plpgsql';
+
 create or replace function insertType( bigint, varchar, varchar ) returns bigint as
 $BODY$
 declare

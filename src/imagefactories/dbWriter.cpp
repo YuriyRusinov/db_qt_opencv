@@ -13,6 +13,7 @@
 #include <opencv_pgdatabase.h>
 #include <opencv_db_result.h>
 
+#include <AircraftType.h>
 #include "dbWriter.h"
 
 using std::string;
@@ -147,6 +148,92 @@ long long dbWriter::updateImage(const QImage& im, QString imName, qlonglong id) 
 long long dbWriter::delImage( qlonglong id ) {
     QString SQL = QString("select del_image ( %1 ); ").arg(id);
     CVDbResult* res = m_db->execute( SQL.toStdString().c_str() );
+    if( res == nullptr || res->getRowCount() != 1) {
+        if( res )
+            delete res;
+        return -1;
+    }
+    long long idd = res->getCellAsInt64(0, 0);
+
+    delete res;
+    return idd;
+}
+
+long long dbWriter::insertType( shared_ptr< AircraftType > wType ) {
+    if( wType == nullptr )
+        return -1;
+    QString SQL = QString("select insertType( %1, '%2', '%3' );")
+                        .arg( wType->getParent() ? QString::number( wType->getParent()->getId() ) : QString("NULL::bigint") )
+                        .arg( wType->getName() )
+                        .arg( wType->getDescription() );
+
+    CVDbResult* res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch( pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return -1;
+    }
+
+    if( res == nullptr || res->getRowCount() != 1) {
+        if( res )
+            delete res;
+        return -1;
+    }
+    long long idd = res->getCellAsInt64(0, 0);
+
+    delete res;
+    return idd;
+}
+
+long long dbWriter::updateType( shared_ptr< AircraftType > wType ) {
+    if( wType == nullptr )
+        return -1;
+    QString SQL = QString("select updateType( %1, %2, '%3', '%4' );")
+                        .arg( wType->getId() )
+                        .arg( wType->getParent() ? QString::number( wType->getParent()->getId() ) : QString("NULL::bigint") )
+                        .arg( wType->getName() )
+                        .arg( wType->getDescription() );
+
+    CVDbResult* res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch( pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return -1;
+    }
+
+    if( res == nullptr || res->getRowCount() != 1) {
+        if( res )
+            delete res;
+        return -1;
+    }
+    long long idd = res->getCellAsInt64(0, 0);
+
+    delete res;
+    return idd;
+}
+
+long long dbWriter::delType( long long id ) {
+    QString SQL = QString("select delType( %1 );").arg( id );
+
+    CVDbResult* res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch( pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return -1;
+    }
+
     if( res == nullptr || res->getRowCount() != 1) {
         if( res )
             delete res;

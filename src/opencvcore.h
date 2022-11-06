@@ -7,10 +7,12 @@
 
 class QAbstractItemModel;
 class QSettings;
+class QAbstractItemView;
 
 class OpenCVDatabase;
 class dbLoader;
 class dbWriter;
+class AircraftType;
 
 using std::unique_ptr;
 using std::shared_ptr;
@@ -35,6 +37,15 @@ private slots:
     void deleteImageFromDb( qlonglong id );
 
     void refreshModel( );
+
+    void insertType( long long idParent );
+    void updateType( long long idType );
+    void deleteType( long long idType );
+
+    void refreshTypes( QAbstractItemView* tvTypes );
+
+    void setParentType( shared_ptr< AircraftType > aircType );
+    void saveType( shared_ptr< AircraftType > aircType );
 
 signals:
     void setWidget( QWidget* w );

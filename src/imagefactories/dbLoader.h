@@ -27,6 +27,7 @@ public:
     shared_ptr< AircraftImages > loadImage( qlonglong id ) const;
 
     map< long long, shared_ptr< AircraftType > > loadTypes() const;
+    shared_ptr< AircraftType > loadType( long long id ) const;
 
     friend class dbOpenCvS;
 private:

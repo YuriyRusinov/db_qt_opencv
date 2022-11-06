@@ -83,11 +83,20 @@ QVariant AircraftTypeModel::data( const QModelIndex& index, int role ) const {
         switch(iCol) {
             case 0: default: return aType->getId(); break;
             case 1: return aType->getName(); break;
-            case 2: return aType->getDescription(); break;
+            case 2: { QString res = aType->getDescription();
+                      QStringList resL = res.split("\n");
+                      if( resL.size() == 1 )
+                          return res;
+                      else
+                          return QString("%1...").arg( resL[0] );
+                      break;
+            }
         }
     }
     else if( role == Qt::UserRole )
         return aType->getId();
+    else if( role == Qt::UserRole+1 )
+        return QVariant::fromValue( aType );
 
     return QVariant();
 }

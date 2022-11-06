@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QAbstractItemModel>
 #include <QStandardItemModel>
+#include <QAbstractItemView>
 #include <QtDebug>
 
 #include <dbLoginForm.h>
@@ -13,6 +14,7 @@
 #include <cvImageModel.h>
 #include <AircraftTypeListForm.h>
 #include <AircraftTypeModel.h>
+#include <AircraftTypeForm.h>
 #include "opencvcore.h"
 
 using std::make_unique;
@@ -143,6 +145,12 @@ QWidget* OpenCVCore::GUIViewTypes( QWidget* parent, Qt::WindowFlags flags ) {
     qDebug() << __PRETTY_FUNCTION__;
     map<long long, shared_ptr<AircraftType>> aircraftTypes = m_databaseLoader->loadTypes();
     AircraftTypeListForm* airTypesForm = new AircraftTypeListForm( parent, flags );
+
+    connect( airTypesForm, &AircraftTypeListForm::addAircraftType, this, &OpenCVCore::insertType );
+    connect( airTypesForm, &AircraftTypeListForm::editAircraftType, this, &OpenCVCore::updateType );
+    connect( airTypesForm, &AircraftTypeListForm::delAircraftType, this, &OpenCVCore::deleteType );
+    connect( airTypesForm, &AircraftTypeListForm::refreshAircraftModel, this, &OpenCVCore::refreshTypes );
+
     airTypesForm->viewToolButtons( true );
     AircraftTypeModel* aTypesMod = new AircraftTypeModel( aircraftTypes );
     airTypesForm->setModel( aTypesMod );
@@ -150,3 +158,75 @@ QWidget* OpenCVCore::GUIViewTypes( QWidget* parent, Qt::WindowFlags flags ) {
 
     return airTypesForm;
 }
+
+void OpenCVCore::insertType( long long idParent ) {
+    shared_ptr< AircraftType > pType = m_databaseLoader->loadType( idParent );
+    shared_ptr< AircraftType > wType( new AircraftType );
+    wType->setParent( pType );
+    qDebug() << __PRETTY_FUNCTION__ << idParent << wType.get() << pType.get();
+    AircraftTypeForm* tForm = new AircraftTypeForm( wType );
+    connect( tForm, &AircraftTypeForm::selectParentType, this, &OpenCVCore::setParentType );
+    connect( tForm, &AircraftTypeForm::saveTypeToDb, this, &OpenCVCore::saveType );
+    emit setWidget( tForm );
+}
+
+void OpenCVCore::updateType( long long idType ) {
+    qDebug() << __PRETTY_FUNCTION__ << idType;
+    shared_ptr< AircraftType > wType = m_databaseLoader->loadType( idType );
+    AircraftTypeForm* tForm = new AircraftTypeForm( wType );
+    connect( tForm, &AircraftTypeForm::selectParentType, this, &OpenCVCore::setParentType );
+    connect( tForm, &AircraftTypeForm::saveTypeToDb, this, &OpenCVCore::saveType );
+    emit setWidget( tForm );
+}
+
+void OpenCVCore::deleteType( long long idType ) {
+    qDebug() << __PRETTY_FUNCTION__ << idType;
+    m_databaseWriter->delType( idType );
+}
+
+void OpenCVCore::refreshTypes( QAbstractItemView* tvTypes ) {
+    if( tvTypes == nullptr )
+        return;
+    map<long long, shared_ptr<AircraftType>> aircraftTypes = m_databaseLoader->loadTypes();
+    AircraftTypeModel* aTypesMod = new AircraftTypeModel( aircraftTypes );
+    QAbstractItemModel* oldModel = tvTypes->model();
+    tvTypes->setModel( aTypesMod );
+    if( oldModel )
+        delete oldModel;
+}
+
+void OpenCVCore::setParentType( shared_ptr< AircraftType > airCraftType ) {
+    if( airCraftType == nullptr )
+        return;
+    long long idType = airCraftType->getId();
+    qDebug() << __PRETTY_FUNCTION__ << idType;
+    map<long long, shared_ptr<AircraftType>> aircraftTypes = m_databaseLoader->loadTypes();
+    AircraftTypeListForm* airTypesForm = new AircraftTypeListForm( );
+
+    airTypesForm->viewToolButtons( false );
+    AircraftTypeModel* aTypesMod = new AircraftTypeModel( aircraftTypes );
+    airTypesForm->setModel( aTypesMod );
+    if( airTypesForm->exec() == QDialog::Accepted ) {
+        AircraftType* aType = airTypesForm->getType();
+        if( aType && aType->getId() != airCraftType->getId() ) {
+            shared_ptr< AircraftType > asType ( aType );
+            airCraftType->setParent( asType );
+        }
+    }
+    delete airTypesForm;
+}
+
+void OpenCVCore::saveType( shared_ptr< AircraftType > airCraftType ) {
+    if( airCraftType == nullptr )
+        return;
+    long long idType = airCraftType->getId();
+    qDebug() << __PRETTY_FUNCTION__ << idType;
+    long long idType0;
+    if( idType < 0 ) {
+        idType0 = m_databaseWriter->insertType( airCraftType );
+    }
+    else {
+        idType0 = m_databaseWriter->updateType( airCraftType );
+    }
+}
+

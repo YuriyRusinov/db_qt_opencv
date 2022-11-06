@@ -2,6 +2,8 @@
 
 #include <QDialog>
 
+class AircraftType;
+
 namespace Ui {
     class aircraft_type_list_form;
 };
@@ -13,6 +15,8 @@ class AircraftTypeListForm : public QDialog {
 public:
     AircraftTypeListForm( QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     virtual ~AircraftTypeListForm();
+
+    AircraftType* getType() const;
 
     void setModel( QAbstractItemModel* typesMod );
 
