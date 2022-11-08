@@ -54,13 +54,33 @@ long long dbWriter::insertImage(const QImage& im, QString imName) {
     paramLength[1] = imgN;
     int* paramFormats = new int[nParams];
     int resForm = 0;
-    CVDbResult* res = m_db->execParams( SQL.toStdString().c_str(),
+    CVDbResult* res = nullptr;
+    try {
+        res = m_db->execParams( SQL.toStdString().c_str(),
                                         nParams,
                                         paramTypes,
                                         paramValues,
                                         paramLength,
                                         paramFormats,
                                         resForm );
+    }
+    catch( pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        delete [] paramLength;
+        delete [] paramTypes;
+        for(int i=0; i<nParams-1; i++) {
+            //
+            // I have to delete only one char*
+            // because the next will be deleted
+            //
+            delete [] paramValues[i];
+        }
+        delete [] paramValues;
+        throw;
+    }
+
     delete [] paramLength;
     delete [] paramTypes;
     for(int i=0; i<nParams-1; i++) {

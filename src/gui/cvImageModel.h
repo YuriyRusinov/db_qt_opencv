@@ -6,11 +6,11 @@
 
 using std::shared_ptr;
 
-class AircraftImages;
+class AircraftImage;
 
 class cvImageModel : public QAbstractItemModel {
 public:
-    cvImageModel( const QMap<long long, shared_ptr< AircraftImages >>& cvIms = QMap<long long, shared_ptr<AircraftImages>>(), QObject *parent = nullptr );
+    cvImageModel( const QMap<long long, shared_ptr< AircraftImage >>& cvIms = QMap<long long, shared_ptr<AircraftImage>>(), QObject *parent = nullptr );
     virtual ~cvImageModel();
 
     virtual QModelIndex	index( int row, int column, const QModelIndex &parent = QModelIndex() ) const override;
@@ -21,7 +21,7 @@ public:
     virtual QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;
 
 private:
-    QMap<long long, shared_ptr< AircraftImages >> _images;
+    QMap<long long, shared_ptr< AircraftImage >> _images;
 
 private:
     Q_OBJECT

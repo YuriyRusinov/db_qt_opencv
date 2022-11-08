@@ -23,8 +23,8 @@ public:
     dbLoader& operator=( const dbLoader& dbl ) = delete;
     virtual ~dbLoader();
 
-    QMap< long long, shared_ptr< AircraftImages > > loadImages() const;
-    shared_ptr< AircraftImages > loadImage( qlonglong id ) const;
+    QMap< long long, shared_ptr< AircraftImage > > loadImages() const;
+    shared_ptr< AircraftImage > loadImage( qlonglong id ) const;
 
     map< long long, shared_ptr< AircraftType > > loadTypes() const;
     shared_ptr< AircraftType > loadType( long long id ) const;

@@ -95,7 +95,7 @@ void OpenCVCore::saveImageToDb( const QImage& im, QString imName, qlonglong id )
 
 QWidget* OpenCVCore::GUIViewImages( QWidget* parent, Qt::WindowFlags flags ) {
     shared_ptr< dbLoader > dbl = m_databaseLoader;
-    QMap<long long, shared_ptr<AircraftImages>> images = dbl->loadImages();
+    QMap<long long, shared_ptr<AircraftImage>> images = dbl->loadImages();
     cvImageListForm* imListForm = new cvImageListForm( parent, flags );
 
     connect( imListForm, &cvImageListForm::insertImage, this, &OpenCVCore::insertImageToDb );
@@ -117,7 +117,7 @@ void OpenCVCore::insertImageToDb( ) {
 
 void OpenCVCore::updateImageInDb( qlonglong id ) {
     qDebug() << __PRETTY_FUNCTION__ << id;
-    shared_ptr< AircraftImages > wim = m_databaseLoader->loadImage(id);
+    shared_ptr< AircraftImage > wim = m_databaseLoader->loadImage(id);
     loadImage( id, wim->getName(), wim->getImage() );
 }
 
@@ -131,7 +131,7 @@ void OpenCVCore::refreshModel( ) {
     if( cvForm == nullptr )
         return;
     qDebug() << __PRETTY_FUNCTION__;
-    QMap<long long, shared_ptr<AircraftImages>> images = m_databaseLoader->loadImages();
+    QMap<long long, shared_ptr<AircraftImage>> images = m_databaseLoader->loadImages();
     QAbstractItemModel * imModel = new cvImageModel( images );
     cvForm->setImagesModel( imModel );
 }

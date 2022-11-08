@@ -40,3 +40,6 @@ void cvImageForm::saveImageToDb() {
     QString imName = _UI->lEImageName->text();
     emit saveImage( m_Image, imName, m_id );
 }
+
+void cvImageForm::classifyImage() {
+}

@@ -13,7 +13,7 @@ declare
     r image_res%rowtype;
     query varchar;
 begin
-    query := E'select i.id, i.name, t.id, t.type_name, i.image_bytes from aircraft_images i inner join aircraft_types t on( i.id_type = t.id ';
+    query := E'select i.id, t.id, t.type_name, i.name, i.image_bytes from aircraft_images i left join aircraft_types t on( i.id_type = t.id ';
     if(imgId is not null) then
         query := query || E' and i.id=' || imgId || E') order by 1;';
     else

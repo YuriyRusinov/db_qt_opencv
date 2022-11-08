@@ -15,9 +15,11 @@ public:
 private slots:
     void loadImageFromFile();
     void saveImageToDb();
+    void classifyImage();
 
 signals:
     void saveImage(const QImage&, QString, qlonglong);
+    void classifyImage( const QImage&, QString, qlonglong );
 
 private:
     Ui::cv_image_form* _UI;

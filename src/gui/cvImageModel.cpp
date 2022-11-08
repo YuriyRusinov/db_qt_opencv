@@ -1,11 +1,13 @@
 #include <QPixmap>
+#include <QtDebug>
 #include <AircraftImage.h>
 #include "cvImageModel.h"
 
-cvImageModel::cvImageModel( const QMap<long long, shared_ptr<AircraftImages>>& cvIms, QObject *parent )
+cvImageModel::cvImageModel( const QMap<long long, shared_ptr<AircraftImage>>& cvIms, QObject *parent )
     : QAbstractItemModel( parent ),
     _images( cvIms )
 {
+    qDebug() << __PRETTY_FUNCTION__ << _images.size();
 }
 
 cvImageModel::~cvImageModel() {
@@ -15,7 +17,7 @@ QModelIndex	cvImageModel::index( int row, int column, const QModelIndex& parent 
     if( parent.isValid() || column < 0 || column >= 3 || row <0 || row >= _images.size() )
         return QModelIndex();
 
-    QMap< long long, shared_ptr< AircraftImages > >::const_iterator pim = _images.constBegin()+row;
+    QMap< long long, shared_ptr< AircraftImage > >::const_iterator pim = _images.constBegin()+row;
     return createIndex( row, column, (quintptr)pim.key() );
 }
 
@@ -44,7 +46,7 @@ QVariant cvImageModel::data( const QModelIndex& index, int role ) const {
 
     int iRow = index.row();
     int iCol = index.column();
-    QMap< long long, shared_ptr< AircraftImages > >::const_iterator pim = _images.constBegin()+iRow;
+    QMap< long long, shared_ptr< AircraftImage > >::const_iterator pim = _images.constBegin()+iRow;
     if( role == Qt::UserRole || (iCol == 0 && role == Qt::DisplayRole) ) {
         return pim.key();
     }

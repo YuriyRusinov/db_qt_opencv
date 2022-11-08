@@ -20,29 +20,30 @@ dbLoader::~dbLoader() {
 
 }
 
-QMap<long long, shared_ptr< AircraftImages > > dbLoader::loadImages() const {
+QMap<long long, shared_ptr< AircraftImage > > dbLoader::loadImages() const {
     QString SQL("select * from GetImages(null);");
+    qDebug() << __PRETTY_FUNCTION__ << SQL;
     CVDbResult * res = nullptr;
     try {
         res = m_db->execute( SQL.toStdString().c_str() );
     }
     catch(pqxx::failure& e) {
-        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        qDebug() << __PRETTY_FUNCTION__ << "Error in images " << e.what();
         if( res )
             delete res;
-        return QMap<long long, shared_ptr< AircraftImages >>();
+        return QMap<long long, shared_ptr< AircraftImage >>();
     }
 
     if( res == nullptr || res->getRowCount() == 0 ) {
         if( res )
             delete res;
-        return QMap<long long, shared_ptr< AircraftImages >>();
+        return QMap<long long, shared_ptr< AircraftImage >>();
     }
     int n = res->getRowCount();
-    QMap<long long, shared_ptr< AircraftImages >> resImages;
+    QMap<long long, shared_ptr< AircraftImage >> resImages;
     for(int i=0; i<n; i++) {
         long long id = res->getCellAsInt64(i, 0);
-        QString name = QString::fromStdString( res->getCellAsString(i, 1) );
+        QString name = QString::fromStdString( res->getCellAsString(i, 3) );
         pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 4);
         const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
         int nn = res->getCellLength(i, 4);//imageBytes.size();
@@ -61,7 +62,7 @@ QMap<long long, shared_ptr< AircraftImages > > dbLoader::loadImages() const {
         qDebug() << __PRETTY_FUNCTION__ << imageBytes.compare( ba ) << (imageBytes == ba) << bDiff << cDiff;
         QImage im;
         bool isLoaded = im.loadFromData( imageBytes );
-        shared_ptr< AircraftImages > pImage ( new AircraftImages(id, name, im) );
+        shared_ptr< AircraftImage > pImage ( new AircraftImage(id, name, im) );
         qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
         resImages.insert(id, pImage);
     }
@@ -69,7 +70,7 @@ QMap<long long, shared_ptr< AircraftImages > > dbLoader::loadImages() const {
     return resImages;
 }
 
-shared_ptr< AircraftImages > dbLoader::loadImage( qlonglong id ) const {
+shared_ptr< AircraftImage > dbLoader::loadImage( qlonglong id ) const {
     QString SQL = QString("select * from GetImages( %1 );").arg( id );
     CVDbResult * res = nullptr;
     try {
@@ -94,7 +95,7 @@ shared_ptr< AircraftImages > dbLoader::loadImage( qlonglong id ) const {
         delete res;
         return nullptr;
     }
-    QString name = QString::fromStdString( res->getCellAsString(i, 1) );
+    QString name = QString::fromStdString( res->getCellAsString(i, 3) );
     pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 4);
     const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
     int nn = res->getCellLength(i, 4);//imageBytes.size();
@@ -114,7 +115,7 @@ shared_ptr< AircraftImages > dbLoader::loadImage( qlonglong id ) const {
     QImage im;
     bool isLoaded = im.loadFromData( imageBytes );
     qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
-    shared_ptr< AircraftImages > resImage ( new AircraftImages(id, name, im) );
+    shared_ptr< AircraftImage > resImage ( new AircraftImage(id, name, im) );
     delete res;
     return resImage;
 }
