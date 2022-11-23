@@ -9,25 +9,6 @@
 
 using std::make_shared;
 
-cvImageForm::cvImageForm( qlonglong id, const QString& imName, const QImage& image, QWidget* parent, Qt::WindowFlags flags )
-    : QWidget( parent, flags ),
-    m_aircraftImage( make_shared< AircraftImage >(id, imName, image) ),
-    m_id( id ),
-    m_ImageName( imName ),
-    m_Image( image ),
-    _UI( new Ui::cv_image_form ) {
-    _UI->setupUi( this );
-    _UI->lEImageName->setText( m_ImageName );
-
-    QPixmap pix = QPixmap::fromImage(m_Image);
-    _UI->lImage->setPixmap(pix);
-    _UI->tbLoadImage->setToolTip( tr("Load Image from file") );
-    _UI->tbSaveImage->setToolTip( tr("Save Image to database") );
-
-    connect( _UI->tbLoadImage, &QToolButton::clicked, this, &cvImageForm::loadImageFromFile );
-    connect( _UI->tbSaveImage, &QToolButton::clicked, this, &cvImageForm::saveImageToDb );
-}
-
 cvImageForm::cvImageForm( shared_ptr< AircraftImage > aImage, QWidget* parent, Qt::WindowFlags flags )
     : QWidget( parent, flags ),
     _UI( new Ui::cv_image_form ),
@@ -48,6 +29,8 @@ cvImageForm::cvImageForm( shared_ptr< AircraftImage > aImage, QWidget* parent, Q
 
     connect( _UI->tbLoadImage, &QToolButton::clicked, this, &cvImageForm::loadImageFromFile );
     connect( _UI->tbSaveImage, &QToolButton::clicked, this, &cvImageForm::saveImageToDb );
+    connect( _UI->tbSelect, &QToolButton::clicked, this, &cvImageForm::classifyImage );
+    connect( _UI->tbClear, &QToolButton::clicked, this, &cvImageForm::clearType );
 }
 
 cvImageForm::~cvImageForm() {
@@ -60,17 +43,32 @@ void cvImageForm::loadImageFromFile() {
         return;
 
     m_Image = QImage(imageFileName);
+    m_aircraftImage->setImage( m_Image );
     QPixmap pix = QPixmap::fromImage(m_Image);
     _UI->lImage->setPixmap(pix);
 }
 
 void cvImageForm::saveImageToDb() {
     QString imName = _UI->lEImageName->text();
-    emit saveImage( m_Image, imName, m_id );
+    m_aircraftImage->setName( imName );
+    emit saveImage( m_aircraftImage );//, imName, m_id );
 }
 
 void cvImageForm::classifyImage() {
     qDebug() << __PRETTY_FUNCTION__;
     QString imName = _UI->lEImageName->text();
-    emit classifyImage( m_aircraftImage );//m_Image, imName, m_id );
+    emit setAircraftType ( m_aircraftImage );
+}
+
+void cvImageForm::setImageType( shared_ptr< AircraftType > aType ) {
+    if( aType == nullptr ) {
+        clearType();
+        return;
+    }
+    _UI->lEType->setText( aType->getName() );
+}
+
+void cvImageForm::clearType() {
+    _UI->lEType->clear();
+    m_aircraftImage->setType( nullptr );
 }

@@ -9,12 +9,12 @@ namespace Ui {
 };
 
 class AircraftImage;
+class AircraftType;
 
 using std::shared_ptr;
 
 class cvImageForm : public QWidget {
 public:
-    cvImageForm( qlonglong id=-1, const QString& imName=QString(), const QImage& image=QImage(), QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     cvImageForm( shared_ptr< AircraftImage > aImage, QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     virtual ~cvImageForm();
 
@@ -22,12 +22,20 @@ private slots:
     void loadImageFromFile();
     void saveImageToDb();
     void classifyImage();
+    void setImageType( shared_ptr< AircraftType > aType );
+    void clearType();
+    void setAirType() {};
 
 signals:
-    void saveImage(const QImage&, QString, qlonglong);
-    void classifyImage( shared_ptr< AircraftImage > );
+    void saveImage( shared_ptr<AircraftImage> );
+    void setAircraftType( shared_ptr< AircraftImage > );
 
 private:
+    //
+    //
+    //
+    friend class OpenCVCore;
+
     Ui::cv_image_form* _UI;
     shared_ptr< AircraftImage > m_aircraftImage;
     qlonglong m_id;

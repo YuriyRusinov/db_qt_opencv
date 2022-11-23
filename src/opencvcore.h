@@ -33,7 +33,7 @@ public:
     void dbDisconnect();
 
 private slots:
-    void saveImageToDb( const QImage& im, QString imName, qlonglong id );
+    void saveImageToDb( shared_ptr< AircraftImage> aircraftImage );
     void insertImageToDb( );
     void updateImageInDb( qlonglong id );
     void deleteImageFromDb( qlonglong id );
@@ -52,6 +52,7 @@ private slots:
 
 signals:
     void setWidget( QWidget* w );
+    void setAircraftType( shared_ptr< AircraftType > aircType );
 
 private:
     OpenCVCore( OpenCVDatabase* db, QObject* parent = nullptr );

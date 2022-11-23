@@ -13,6 +13,7 @@
 #include <opencv_pgdatabase.h>
 #include <opencv_db_result.h>
 
+#include <AircraftImage.h>
 #include <AircraftType.h>
 #include "dbWriter.h"
 
@@ -263,4 +264,60 @@ long long dbWriter::delType( long long id ) {
 
     delete res;
     return idd;
+}
+
+long long dbWriter::insertAircraftImage( shared_ptr< AircraftImage > aircImage ) {
+    long long idImage = insertImage( aircImage->getImage(), aircImage->getName() );
+    if( aircImage->getType() == nullptr )
+        return idImage;
+    QString SQL = QString("select set_image_type( %1, %2 );").arg( idImage ).arg( aircImage->getType()->getId() );
+    CVDbResult* res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch( pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return -1;
+    }
+
+    if( res == nullptr || res->getRowCount() != 1) {
+        if( res )
+            delete res;
+        return -1;
+    }
+    long long idd = res->getCellAsInt64(0, 0);
+
+    delete res;
+    return idImage;
+
+}
+
+long long dbWriter::updateAircraftImage( shared_ptr< AircraftImage > aircImage ) {
+    if( aircImage == nullptr )
+        return -1;
+    long long idImage = updateImage( aircImage->getImage(), aircImage->getName(), aircImage->getId() );
+    QString SQL = QString("select set_image_type( %1, %2 );").arg( idImage )
+                                                             .arg( aircImage->getType() ? QString::number (aircImage->getType()->getId()) : QString("NULL::bigint" ) );
+    CVDbResult* res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch( pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return -1;
+    }
+
+    if( res == nullptr || res->getRowCount() != 1) {
+        if( res )
+            delete res;
+        return -1;
+    }
+    long long idd = res->getCellAsInt64(0, 0);
+
+    delete res;
+    return idImage;
 }

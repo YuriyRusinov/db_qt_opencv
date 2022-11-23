@@ -159,8 +159,9 @@ void ImageTestMainWindow::importFromDir() {
         qDebug() << __PRETTY_FUNCTION__ << fileNames[i];
         QImage im (fileNames[i]);
         QString imName = fileNames[i];
+        shared_ptr< AircraftImage > wIm = make_shared<AircraftImage>(-1, imName, im);
         try {
-            dbw->insertImage(im, imName);
+            dbw->insertAircraftImage( wIm );
         }
         catch(pqxx::failure& e) {
             qDebug() << __PRETTY_FUNCTION__ << e.what();

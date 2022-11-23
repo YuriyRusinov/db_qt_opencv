@@ -82,23 +82,25 @@ shared_ptr< dbWriter > OpenCVCore::getDbWriter() const {
 void OpenCVCore::loadAircraftImage( shared_ptr< AircraftImage > image, QWidget* parent, Qt::WindowFlags flags ) {
     cvImageForm* imWidget = new cvImageForm(image, parent, flags);
     connect( imWidget, &cvImageForm::saveImage, this, &OpenCVCore::saveImageToDb );
-    connect( imWidget, SIGNAL(classifyImage(shared_ptr<AircraftImage>)), this, SLOT(setImageType(shared_ptr<AircraftImage>)) );
+    connect( imWidget, &cvImageForm::setAircraftType, this, &OpenCVCore::setImageType );
+    connect( this, &OpenCVCore::setAircraftType, imWidget, &cvImageForm::setImageType );
     emit setWidget( imWidget );
 }
 
 void OpenCVCore::loadImage( long long id, QString name, const QImage& im, QWidget* parent, Qt::WindowFlags flags ) {
-    cvImageForm* imWidget = new cvImageForm(id, name, im, parent, flags);
-    connect( imWidget, &cvImageForm::saveImage, this, &OpenCVCore::saveImageToDb );
-    emit setWidget( imWidget );
+    shared_ptr< AircraftImage > aim = make_shared< AircraftImage >(id, name, im);
+    loadAircraftImage( aim, parent, flags );
 }
 
-void OpenCVCore::saveImageToDb( const QImage& im, QString imName, qlonglong id ) {
+void OpenCVCore::saveImageToDb( shared_ptr< AircraftImage > aircraftImage ) {
+    if( aircraftImage == nullptr )
+        return;
     qlonglong imId;
-    if( id < 0 ) {
-        imId = m_databaseWriter->insertImage( im, imName );
+    if( aircraftImage->getId() < 0 ) {
+        imId = m_databaseWriter->insertAircraftImage( aircraftImage );
     }
     else {
-        imId = m_databaseWriter->updateImage( im, imName, id);
+        imId = m_databaseWriter->updateAircraftImage( aircraftImage );//im, imName, id);
     }
     qDebug() << __PRETTY_FUNCTION__ << imId;
 }
@@ -242,4 +244,19 @@ void OpenCVCore::saveType( shared_ptr< AircraftType > airCraftType ) {
 }
 
 void OpenCVCore::setImageType( shared_ptr< AircraftImage > aircraftImage ) {
+    qDebug() << __PRETTY_FUNCTION__;
+    if( aircraftImage == nullptr )
+        return;
+    map<long long, shared_ptr<AircraftType>> aircraftTypes = m_databaseLoader->loadTypes();
+    AircraftTypeListForm* airTypesForm = new AircraftTypeListForm( );
+
+    airTypesForm->viewToolButtons( false );
+    AircraftTypeModel* aTypesMod = new AircraftTypeModel( aircraftTypes );
+    airTypesForm->setModel( aTypesMod );
+    if( airTypesForm->exec() == QDialog::Accepted ) {
+        shared_ptr< AircraftType > aType( airTypesForm->getType() );
+        aircraftImage->setType( aType );
+    }
+    delete airTypesForm;
+    emit setAircraftType( aircraftImage->getType() );
 }

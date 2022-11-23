@@ -43,6 +43,9 @@ QMap<long long, shared_ptr< AircraftImage > > dbLoader::loadImages() const {
     QMap<long long, shared_ptr< AircraftImage >> resImages;
     for(int i=0; i<n; i++) {
         long long id = res->getCellAsInt64(i, 0);
+        long long idType = res->getCellAsInt64(i, 1);
+        QString tName = QString::fromStdString( res->getCellAsString(i, 2) );
+        shared_ptr< AircraftType > aType = make_shared< AircraftType>( idType, tName );
         QString name = QString::fromStdString( res->getCellAsString(i, 3) );
         pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 4);
         const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
@@ -63,6 +66,7 @@ QMap<long long, shared_ptr< AircraftImage > > dbLoader::loadImages() const {
         QImage im;
         bool isLoaded = im.loadFromData( imageBytes );
         shared_ptr< AircraftImage > pImage ( new AircraftImage(id, name, im) );
+        pImage->setType( aType );
         qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
         resImages.insert(id, pImage);
     }
@@ -97,6 +101,9 @@ shared_ptr< AircraftImage > dbLoader::loadImage( qlonglong id ) const {
         delete res;
         return nullptr;
     }
+    long long idType = res->getCellAsInt64(i, 1);
+    QString tName = QString::fromStdString( res->getCellAsString(i, 2) );
+    shared_ptr< AircraftType > aType = make_shared< AircraftType>( idType, tName );
     QString name = QString::fromStdString( res->getCellAsString(i, 3) );
     pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 4);
     const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
@@ -118,6 +125,7 @@ shared_ptr< AircraftImage > dbLoader::loadImage( qlonglong id ) const {
     bool isLoaded = im.loadFromData( imageBytes );
     qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
     shared_ptr< AircraftImage > resImage ( new AircraftImage(id, name, im) );
+    resImage->setType( aType );
     delete res;
     return resImage;
 }
