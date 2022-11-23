@@ -83,12 +83,14 @@ shared_ptr< AircraftImage > dbLoader::loadImage( qlonglong id ) const {
         return nullptr;
     }
 
+    //qDebug() << __PRETTY_FUNCTION__ << (res != nullptr ? res->getRowCount() : -1) << SQL;
     if( res == nullptr || res->getRowCount() != 1 ) {
         if( res )
             delete res;
         return nullptr;
     }
     int n = res->getRowCount();
+    //qDebug() << __PRETTY_FUNCTION__ << n;
     int i = 0;
     long id0 = res->getCellAsInt(i, 0);
     if( id0 != id ) {

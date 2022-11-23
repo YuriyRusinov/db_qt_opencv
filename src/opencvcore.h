@@ -13,6 +13,7 @@ class OpenCVDatabase;
 class dbLoader;
 class dbWriter;
 class AircraftType;
+class AircraftImage;
 
 using std::unique_ptr;
 using std::shared_ptr;
@@ -27,6 +28,7 @@ public:
     shared_ptr< dbLoader > getDbLoader() const;
     shared_ptr< dbWriter > getDbWriter() const;
 
+    void loadAircraftImage( shared_ptr< AircraftImage > image, QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     void loadImage( long long id=-1, QString name=QString(), const QImage& im=QImage(), QWidget* parent=nullptr, Qt::WindowFlags flags=Qt::WindowFlags() );
     void dbDisconnect();
 
@@ -46,6 +48,7 @@ private slots:
 
     void setParentType( shared_ptr< AircraftType > aircType );
     void saveType( shared_ptr< AircraftType > aircType );
+    void setImageType( shared_ptr< AircraftImage > aircraftImage );
 
 signals:
     void setWidget( QWidget* w );

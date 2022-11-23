@@ -12,6 +12,7 @@
 #include <cvImageForm.h>
 #include <cvImageListForm.h>
 #include <cvImageModel.h>
+#include <AircraftImage.h>
 #include <AircraftTypeListForm.h>
 #include <AircraftTypeModel.h>
 #include <AircraftTypeForm.h>
@@ -61,6 +62,8 @@ OpenCVCore::OpenCVCore( OpenCVDatabase* db, QObject* parent )
     m_databaseLoader ( make_shared<dbLoader>( db ) ),
     m_databaseWriter ( make_shared<dbWriter>( db ) ),
     m_cvSettings( new QSettings(QSettings::NativeFormat, QSettings::UserScope, tr("YRusinov")) ) {
+    qRegisterMetaType<shared_ptr<AircraftImage>>();
+    qRegisterMetaType<AircraftImage>("std::shared_ptr<AircraftImage>const&");
 }
 
 OpenCVCore::~OpenCVCore() {
@@ -74,6 +77,13 @@ shared_ptr< dbLoader > OpenCVCore::getDbLoader() const {
 
 shared_ptr< dbWriter > OpenCVCore::getDbWriter() const {
     return m_databaseWriter ;
+}
+
+void OpenCVCore::loadAircraftImage( shared_ptr< AircraftImage > image, QWidget* parent, Qt::WindowFlags flags ) {
+    cvImageForm* imWidget = new cvImageForm(image, parent, flags);
+    connect( imWidget, &cvImageForm::saveImage, this, &OpenCVCore::saveImageToDb );
+    connect( imWidget, SIGNAL(classifyImage(shared_ptr<AircraftImage>)), this, SLOT(setImageType(shared_ptr<AircraftImage>)) );
+    emit setWidget( imWidget );
 }
 
 void OpenCVCore::loadImage( long long id, QString name, const QImage& im, QWidget* parent, Qt::WindowFlags flags ) {
@@ -112,13 +122,14 @@ QWidget* OpenCVCore::GUIViewImages( QWidget* parent, Qt::WindowFlags flags ) {
 
 void OpenCVCore::insertImageToDb( ) {
     qDebug() << __PRETTY_FUNCTION__;
-    loadImage( );
+    shared_ptr< AircraftImage > wimage = make_shared< AircraftImage >();
+    loadAircraftImage( wimage );
 }
 
 void OpenCVCore::updateImageInDb( qlonglong id ) {
     qDebug() << __PRETTY_FUNCTION__ << id;
     shared_ptr< AircraftImage > wim = m_databaseLoader->loadImage(id);
-    loadImage( id, wim->getName(), wim->getImage() );
+    loadAircraftImage( wim );//id, wim->getName(), wim->getImage() );
 }
 
 void OpenCVCore::deleteImageFromDb( qlonglong id ) {
@@ -230,3 +241,5 @@ void OpenCVCore::saveType( shared_ptr< AircraftType > airCraftType ) {
     }
 }
 
+void OpenCVCore::setImageType( shared_ptr< AircraftImage > aircraftImage ) {
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QMetaType>
 #include <QImage>
 #include <memory>
 
@@ -33,3 +34,6 @@ private:
 
     shared_ptr< AircraftType > m_type;
 };
+
+Q_DECLARE_METATYPE(AircraftImage);
+Q_DECLARE_METATYPE(shared_ptr<AircraftImage>);

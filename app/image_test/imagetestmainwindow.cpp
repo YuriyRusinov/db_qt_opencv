@@ -133,8 +133,9 @@ void ImageTestMainWindow::insertImage() {
     im2.save( &tstIm );
     tstIm.close();
 */
+    shared_ptr< AircraftImage > aImage = std::make_shared< AircraftImage >(-1, QString(), im );
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
-    cvCore->loadImage( -1, QString(), im );
+    cvCore->loadAircraftImage( aImage );//-1, QString(), im );
 }
 
 void ImageTestMainWindow::addSubWindow( QWidget* w ) {

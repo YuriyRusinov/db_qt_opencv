@@ -15,6 +15,8 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(PkgConfig REQUIRED)
 #find_package(FFTW REQUIRED)
