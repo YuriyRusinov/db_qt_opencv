@@ -56,6 +56,7 @@ set(SOURCES
 )
 
 set(RESOURCES
+    ../../src/aircraftResources.qrc
 )
 
 qt5_wrap_ui(UIS_HDRS ${FORMS} )

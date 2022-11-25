@@ -16,12 +16,16 @@ AircraftTypeListForm::AircraftTypeListForm( QWidget* parent, Qt::WindowFlags fla
     _UI->setupUi( this );
 
     _UI->tbAdd->setToolTip( tr("Add new type") );
+    _UI->tbAdd->setIcon( QIcon(":/icons/add.png") );
     connect( _UI->tbAdd, &QAbstractButton::clicked, this, &AircraftTypeListForm::addType );
     _UI->tbEdit->setToolTip( tr("Edit selected type") );
+    _UI->tbEdit->setIcon( QIcon(":/icons/edit.png") );
     connect( _UI->tbEdit, &QAbstractButton::clicked, this, &AircraftTypeListForm::editType );
     _UI->tbDel->setToolTip( tr("Delete selected type") );
+    _UI->tbDel->setIcon( QIcon(":/icons/del.png") );
     connect( _UI->tbDel, &QAbstractButton::clicked, this, &AircraftTypeListForm::delType );
     _UI->tbRefresh->setToolTip( tr("Refresh types from DB") );
+    _UI->tbRefresh->setIcon( QIcon(":/icons/refresh.png") );
     connect( _UI->tbRefresh, &QAbstractButton::clicked, this, &AircraftTypeListForm::refreshTypes );
 }
 

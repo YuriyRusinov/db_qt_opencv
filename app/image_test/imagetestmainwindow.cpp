@@ -41,6 +41,11 @@ ImageTestMainWindow::ImageTestMainWindow(QWidget* parent, Qt::WindowFlags flags)
     setActionsEnable( false );
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
 
+    _UI->act_Connect->setIcon( QIcon(":/icons/db_connect.png") );
+    _UI->act_Connect->setToolTip( tr("Connect to database...") );
+    _UI->act_Disconnect->setIcon( QIcon(":/icons/db_disconnect.png") );
+    _UI->act_Disconnect->setToolTip( tr("Disconnect from previously connected database") );
+
     connect( _UI->act_Connect, &QAction::triggered, this, &ImageTestMainWindow::dbConnect );
     connect( _UI->act_Disconnect, &QAction::triggered, this, &ImageTestMainWindow::dbDisconnect );
     connect( _UI->actView_aircraft_types, &QAction::triggered, this, &ImageTestMainWindow::viewTypes );
@@ -86,6 +91,7 @@ void ImageTestMainWindow::init() {
 }
 
 void ImageTestMainWindow::setActionsEnable( bool enable ) {
+    _UI->act_Connect->setEnabled( !enable );
     _UI->actInsert_image->setEnabled( enable );
     _UI->actionView_images->setEnabled( enable );
     _UI->actAdd_aircraft_type->setEnabled( enable );

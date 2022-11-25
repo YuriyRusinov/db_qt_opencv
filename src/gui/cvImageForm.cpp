@@ -22,8 +22,16 @@ cvImageForm::cvImageForm( shared_ptr< AircraftImage > aImage, QWidget* parent, Q
     if( aImage && aImage->getType() )
         _UI->lEType->setText( aImage->getType()->getName() );
 
+    _UI->lImage->setScaledContents(true);
     QPixmap pix = QPixmap::fromImage(m_Image);
     _UI->lImage->setPixmap(pix);
+    _UI->tbLoadImage->setIcon( QIcon(":/icons/load.png"));
+    _UI->tbSaveImage->setIcon( QIcon(":/icons/save_to_db.png") );
+    _UI->tbSelect->setIcon( QIcon(":/icons/set_type.png") );
+    _UI->tbClear->setIcon( QIcon(":/icons/clear.png") );
+
+    _UI->tbSelect->setToolTip( tr("Set aircraft image type") );
+    _UI->tbClear->setToolTip( tr("Clear aircraft image type") );
     _UI->tbLoadImage->setToolTip( tr("Load Image from file") );
     _UI->tbSaveImage->setToolTip( tr("Save Image to database") );
 

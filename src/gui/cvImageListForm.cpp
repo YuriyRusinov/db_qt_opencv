@@ -15,9 +15,13 @@ cvImageListForm::cvImageListForm( QWidget* parent, Qt::WindowFlags flags )
 {
     _UI->setupUi( this );
 
+    _UI->tbAddImage->setIcon( QIcon(":/icons/add.png") );
     _UI->tbAddImage->setToolTip( tr("Add new image to database" ) );
+    _UI->tbUpdateImage->setIcon( QIcon(":/icons/edit.png") );
     _UI->tbUpdateImage->setToolTip( tr("Update/replace selected image in database") );
+    _UI->tbDelImage->setIcon( QIcon(":/icons/del.png") );
     _UI->tbDelImage->setToolTip( tr("Delete selected image in database") );
+    _UI->tbRefresh->setIcon( QIcon(":/icons/refresh.png") );
     _UI->tbRefresh->setToolTip( tr("Refresh images") );
 
     connect( _UI->tbAddImage, &QToolButton::clicked, this, &cvImageListForm::addImage );

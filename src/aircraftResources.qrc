@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>icons/refresh.png</file>
+    <file>icons/add.png</file>
+    <file>icons/edit.png</file>
+    <file>icons/del.png</file>
+    <file>icons/load.png</file>
+    <file>icons/save_to_db.png</file>
+    <file>icons/set_type.png</file>
+    <file>icons/clear.png</file>
+    <file>icons/db_connect.png</file>
+    <file>icons/db_disconnect.png</file>
+</qresource>
+</RCC>
