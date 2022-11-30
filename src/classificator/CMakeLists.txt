@@ -35,6 +35,8 @@ link_directories(${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_SOURCE_DIR}/src/dataaccess)
 link_directories(${CMAKE_SOURCE_DIR}/src/gui)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(HEADERS
     AircraftType.h
     AircraftImage.h

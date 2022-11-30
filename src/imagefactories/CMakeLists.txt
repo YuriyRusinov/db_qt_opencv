@@ -40,6 +40,8 @@ link_directories(${CMAKE_SOURCE_DIR}/src/dataaccess)
 link_directories(${CMAKE_SOURCE_DIR}/src/classificator)
 link_directories(${CMAKE_SOURCE_DIR}/src/gui)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(HEADERS
     dbLoader.h
     dbWriter.h

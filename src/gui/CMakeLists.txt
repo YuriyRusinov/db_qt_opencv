@@ -35,6 +35,8 @@ include_directories(${PROJECT_SOURCE_DIR}
 
 link_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/classificator)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(HEADERS
     dbLoginForm.h
     cvImageForm.h

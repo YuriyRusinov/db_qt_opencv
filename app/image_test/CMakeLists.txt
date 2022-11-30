@@ -42,6 +42,8 @@ link_directories(${CMAKE_SOURCE_DIR}/src
                  ${CMAKE_SOURCE_DIR}/src/imagefactories
 )
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(HEADERS
     imagetestmainwindow.h
 )

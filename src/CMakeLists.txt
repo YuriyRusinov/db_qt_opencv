@@ -47,6 +47,8 @@ link_directories(${CMAKE_SOURCE_DIR}/src/classificator)
 link_directories(${CMAKE_SOURCE_DIR}/src/imagefactories)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/gui)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(HEADERS
     db_opencv_singleton.h
     opencvcore.h

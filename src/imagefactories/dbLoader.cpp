@@ -47,27 +47,9 @@ QMap<long long, shared_ptr< AircraftImage > > dbLoader::loadImages() const {
         QString tName = QString::fromStdString( res->getCellAsString(i, 2) );
         shared_ptr< AircraftType > aType = make_shared< AircraftType>( idType, tName );
         QString name = QString::fromStdString( res->getCellAsString(i, 3) );
-        pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 4);
-        const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
-        int nn = res->getCellLength(i, 4);//imageBytes.size();
-        QByteArray imageBytes = QByteArray::fromRawData( imBytes, nn );
-        QByteArray ba = res->getCellAsByteArray(i, 4);
-        QByteArray bDiff;
-        QByteArray cDiff;
-        for(int ii=0; ii<nn; ii++) {
-            char c0 = imageBytes[ii];
-            char c1 = ba[ii];
-            if(c1 != c0) {
-                bDiff.append(c0);
-                cDiff.append(c1);
-            }
-        }
-        qDebug() << __PRETTY_FUNCTION__ << imageBytes.compare( ba ) << (imageBytes == ba) << bDiff << cDiff;
-        QImage im;
-        bool isLoaded = im.loadFromData( imageBytes );
-        shared_ptr< AircraftImage > pImage ( new AircraftImage(id, name, im) );
+        QImage aircraftImage = res->getCellAsImage( i, 4 );
+        shared_ptr< AircraftImage > pImage ( new AircraftImage(id, name, aircraftImage ) );
         pImage->setType( aType );
-        qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
         resImages.insert(id, pImage);
     }
     delete res;
@@ -105,25 +87,7 @@ shared_ptr< AircraftImage > dbLoader::loadImage( qlonglong id ) const {
     QString tName = QString::fromStdString( res->getCellAsString(i, 2) );
     shared_ptr< AircraftType > aType = make_shared< AircraftType>( idType, tName );
     QString name = QString::fromStdString( res->getCellAsString(i, 3) );
-    pqxx::binarystring imBytesStr = res->getCellAsBinaryString(i, 4);
-    const char* imBytes = imBytesStr.get();//res->getCellData(i, 2);
-    int nn = res->getCellLength(i, 4);//imageBytes.size();
-    QByteArray imageBytes = QByteArray::fromRawData( imBytes, nn );
-    QByteArray ba = res->getCellAsByteArray(i, 4);
-    QByteArray bDiff;
-    QByteArray cDiff;
-    for(int ii=0; ii<nn; ii++) {
-        char c0 = imageBytes[ii];
-        char c1 = ba[ii];
-        if(c1 != c0) {
-            bDiff.append(c0);
-            cDiff.append(c1);
-        }
-    }
-    qDebug() << __PRETTY_FUNCTION__ << imageBytes.compare( ba ) << (imageBytes == ba) << bDiff << cDiff;
-    QImage im;
-    bool isLoaded = im.loadFromData( imageBytes );
-    qDebug() << __PRETTY_FUNCTION__ << nn << isLoaded;// << (ba.compare ( imageBytes) );
+    QImage im = res->getCellAsImage(i, 4);
     shared_ptr< AircraftImage > resImage ( new AircraftImage(id, name, im) );
     resImage->setType( aType );
     delete res;

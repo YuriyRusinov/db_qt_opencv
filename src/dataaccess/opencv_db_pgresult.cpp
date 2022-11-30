@@ -84,13 +84,27 @@ QByteArray CVDbPgResult::getCellAsByteArray( int row, int column ) const {
     pqxx::field fCell( m_res->at(row).at(column) );
     pqxx::binarystring fCellB = getCellAsBinaryString( row, column );
     pqxx::binarystring fCellBB( fCell );
-    //qDebug() << __PRETTY_FUNCTION__ << (fCellB == fCellBB);
+    qDebug() << __PRETTY_FUNCTION__ << (fCellB == fCellBB) << row << column;
     pqxx::field::size_type nn = getCellLength( row, column );//fCell.size();//strlen((const char*)buffer);
-    qDebug() << __PRETTY_FUNCTION__ << nn << fCellB.size() << fCell.size() << (fCellB == fCellBB);
+    //qDebug() << __PRETTY_FUNCTION__ << nn << fCellB.size() << fCell.size() << (fCellB == fCellBB);
     const char* imBytes = fCellB.get();
     QByteArray resbytes = QByteArray::fromRawData( imBytes, nn);
     return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
+
+QImage CVDbPgResult::getCellAsImage( int row, int column ) const {
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return QImage();
+
+    pqxx::binarystring imBytesStr = getCellAsBinaryString( row, column );
+    const char* imBytes = imBytesStr.get();
+    int nn = getCellLength( row, column );
+    QByteArray imABytes = QByteArray::fromRawData( imBytes, nn );
+    QImage resImage;
+    bool isLoaded = resImage.loadFromData( imABytes );
+    qDebug() << __PRETTY_FUNCTION__ << isLoaded;
+    return resImage;
+}
 
 pqxx::binarystring CVDbPgResult::getCellAsBinaryString( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )

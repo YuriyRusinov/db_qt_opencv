@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QByteArray>
+#include <QImage>
 
 #include <string>
 #include <list>
@@ -74,7 +75,7 @@ public:
     
     virtual string getCell(int row, int column) const = 0; // Возвращает результат sql-запроса в формате QVariant
     virtual QByteArray getCellAsByteArray (int row, int column) const = 0; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
-    virtual pqxx::binarystring getCellAsBinaryString( int row, int column) const = 0; // Возвращает для Postgresql результат запроса в виде pqxx::binarystring, удобно для полей типа bytea
+    virtual QImage getCellAsImage( int row, int column ) const = 0; // Возвращает результат запроса в виде изображения QImage
     
     int getCellAsInt(int row, int column, bool * ok = 0) const; // Возвращает результат sql-запроса в виде целого числа
     long long getCellAsInt64(int row, int column, bool * ok = 0) const; // Возвращает результат sql-запроса в виде целого числа

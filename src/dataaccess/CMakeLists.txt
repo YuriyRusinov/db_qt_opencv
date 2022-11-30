@@ -29,6 +29,8 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${Qt5Widgets_INCLUDE_DIRS}
                     )
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(HEADERS
     opencv_database.h
     opencv_pgdatabase.h
