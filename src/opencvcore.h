@@ -37,6 +37,7 @@ private slots:
     void insertImageToDb( );
     void updateImageInDb( qlonglong id );
     void deleteImageFromDb( qlonglong id );
+    void viewImage( qlonglong id );
 
     void refreshModel( );
 

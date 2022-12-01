@@ -21,6 +21,7 @@ private slots:
     void addImage( );
     void updImage( );
     void delImage( );
+    void viewImage( );
 
     void refreshImages( );
 
@@ -30,6 +31,7 @@ signals:
     void deleteImage( qlonglong id );
 
     void refreshModel( );
+    void viewDbImage( qlonglong id );
 private:
     Ui::cv_image_list_form* _UI;
 

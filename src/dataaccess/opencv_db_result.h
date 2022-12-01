@@ -7,14 +7,12 @@
 #include <list>
 #include <vector>
 #include <variant>
-#include <pqxx/binarystring.hxx>
+#include <opencv2/core/mat.hpp>
 
 using std::string;
 using std::list;
 using std::vector;
 using std::variant;
-
-using pqxx::binarystring;
 
 class CVDbResult {
 public:
@@ -76,6 +74,7 @@ public:
     virtual string getCell(int row, int column) const = 0; // Возвращает результат sql-запроса в формате QVariant
     virtual QByteArray getCellAsByteArray (int row, int column) const = 0; // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
     virtual QImage getCellAsImage( int row, int column ) const = 0; // Возвращает результат запроса в виде изображения QImage
+    virtual cv::Mat getCellAsMatrix( int row, int column ) const = 0; // Result as cv::Mat
     
     int getCellAsInt(int row, int column, bool * ok = 0) const; // Возвращает результат sql-запроса в виде целого числа
     long long getCellAsInt64(int row, int column, bool * ok = 0) const; // Возвращает результат sql-запроса в виде целого числа

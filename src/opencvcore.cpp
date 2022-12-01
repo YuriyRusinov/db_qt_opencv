@@ -16,6 +16,9 @@
 #include <AircraftTypeListForm.h>
 #include <AircraftTypeModel.h>
 #include <AircraftTypeForm.h>
+
+#include <opencv2/viz/widgets.hpp>
+#include <opencv2/highgui.hpp>
 #include "opencvcore.h"
 
 using std::make_unique;
@@ -114,6 +117,7 @@ QWidget* OpenCVCore::GUIViewImages( QWidget* parent, Qt::WindowFlags flags ) {
     connect( imListForm, &cvImageListForm::updateImage, this, &OpenCVCore::updateImageInDb );
     connect( imListForm, &cvImageListForm::deleteImage, this, &OpenCVCore::deleteImageFromDb );
     connect( imListForm, &cvImageListForm::refreshModel, this, &OpenCVCore::refreshModel );
+    connect( imListForm, &cvImageListForm::viewDbImage, this, &OpenCVCore::viewImage );
 
     QAbstractItemModel * imModel = new cvImageModel( images );
     imListForm->setImagesModel( imModel );
@@ -259,4 +263,11 @@ void OpenCVCore::setImageType( shared_ptr< AircraftImage > aircraftImage ) {
     }
     delete airTypesForm;
     emit setAircraftType( aircraftImage->getType() );
+}
+
+void OpenCVCore::viewImage( qlonglong id ) {
+    string imName;
+    cv::Mat pIm = m_databaseLoader->loadCVImage( id, imName );
+    
+    cv::imshow(imName, pIm);
 }

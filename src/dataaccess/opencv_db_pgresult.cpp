@@ -13,7 +13,7 @@
 #include <pqxx/row.hxx>
 #include <pqxx/field.hxx>
 #include <pqxx/binarystring.hxx>
-
+#include <opencv2/imgcodecs.hpp>
 #include "opencv_db_pgresult.h"
 
 using std::vector;
@@ -104,6 +104,18 @@ QImage CVDbPgResult::getCellAsImage( int row, int column ) const {
     bool isLoaded = resImage.loadFromData( imABytes );
     qDebug() << __PRETTY_FUNCTION__ << isLoaded;
     return resImage;
+}
+
+cv::Mat CVDbPgResult::getCellAsMatrix( int row, int column ) const {
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return cv::Mat();
+
+    pqxx::binarystring imBytesStr = getCellAsBinaryString( row, column );
+    const char* imBytes = imBytesStr.get();
+    int nn = getCellLength( row, column );
+    vector<uchar> jpgbytes(imBytes, imBytes+nn);
+    cv::Mat res = cv::imdecode(jpgbytes, cv::IMREAD_COLOR);//cv::CV_LOAD_IMAGE_COLOR);
+    return res;
 }
 
 pqxx::binarystring CVDbPgResult::getCellAsBinaryString( int row, int column ) const {

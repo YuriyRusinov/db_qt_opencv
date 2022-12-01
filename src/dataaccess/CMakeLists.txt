@@ -27,6 +27,7 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
                     ${Qt5Core_INCLUDE_DIRS}
                     ${Qt5Widgets_INCLUDE_DIRS}
+                    ${OpenCV_INCLUDE_DIRS}
                     )
 
 set(CMAKE_BUILD_TYPE Debug)
@@ -47,4 +48,4 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} )
 
-target_link_libraries(${PROJECT_NAME} -lpqxx -lpq)
+target_link_libraries(${PROJECT_NAME} -lpqxx -lpq ${OpenCV_LIBS})

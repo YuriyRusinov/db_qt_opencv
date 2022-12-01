@@ -21,6 +21,8 @@ cvImageListForm::cvImageListForm( QWidget* parent, Qt::WindowFlags flags )
     _UI->tbUpdateImage->setToolTip( tr("Update/replace selected image in database") );
     _UI->tbDelImage->setIcon( QIcon(":/icons/del.png") );
     _UI->tbDelImage->setToolTip( tr("Delete selected image in database") );
+    _UI->tbViewOpenCV->setIcon( QIcon(":/icons/view.png") );
+    _UI->tbViewOpenCV->setToolTip( tr("View image in opencv widget") );
     _UI->tbRefresh->setIcon( QIcon(":/icons/refresh.png") );
     _UI->tbRefresh->setToolTip( tr("Refresh images") );
 
@@ -28,6 +30,7 @@ cvImageListForm::cvImageListForm( QWidget* parent, Qt::WindowFlags flags )
     connect( _UI->tbUpdateImage, &QToolButton::clicked, this, &cvImageListForm::updImage );
     connect( _UI->tbDelImage, &QToolButton::clicked, this, &cvImageListForm::delImage );
     connect( _UI->tbRefresh, &QToolButton::clicked, this, &cvImageListForm::refreshImages );
+    connect( _UI->tbViewOpenCV, &QToolButton::clicked, this, &cvImageListForm::viewImage );
 }
 
 cvImageListForm::~cvImageListForm() {
@@ -87,4 +90,18 @@ void cvImageListForm::delImage( ) {
 void cvImageListForm::refreshImages( ) {
     qDebug() << __PRETTY_FUNCTION__;
     emit refreshModel( );
+}
+
+void cvImageListForm::viewImage( ) {
+    qDebug() << __PRETTY_FUNCTION__;
+    QItemSelectionModel *selModel = _UI->tvImages->selectionModel();
+    QItemSelection sel = selModel->selection();
+    QModelIndexList selIndexes = sel.indexes();
+    if( selIndexes.isEmpty() ) {
+        QMessageBox::warning( this, tr("View image"), tr("Select image for view"), QMessageBox::Ok );
+        return;
+    }
+    QModelIndex wIndex = selIndexes[0];
+    qlonglong idImage = wIndex.data( Qt::UserRole ).toLongLong();
+    emit viewDbImage( idImage );
 }

@@ -94,6 +94,30 @@ shared_ptr< AircraftImage > dbLoader::loadImage( qlonglong id ) const {
     return resImage;
 }
 
+cv::Mat dbLoader::loadCVImage( qlonglong id, string& imName ) const {
+    QString SQL = QString("select * from GetImages( %1 );").arg( id );
+    CVDbResult * res = nullptr;
+    try {
+        res = m_db->execute( SQL.toStdString().c_str() );
+    }
+    catch(pqxx::failure& e) {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+        if( res )
+            delete res;
+        return cv::Mat();
+    }
+
+    if( res == nullptr || res->getRowCount() != 1 ) {
+        if( res )
+            delete res;
+        return cv::Mat();
+    }
+    int n = res->getRowCount();
+    cv::Mat im = res->getCellAsMatrix(0, 4);
+    imName = res->getCellAsString(0, 3);
+    return im;
+}
+
 map< long long, shared_ptr< AircraftType > > dbLoader::loadTypes() const {
     QString SQL("select * from GetTypes(null);");
     map< long long, shared_ptr< AircraftType >> resTypes;

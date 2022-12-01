@@ -10,5 +10,6 @@
     <file>icons/clear.png</file>
     <file>icons/db_connect.png</file>
     <file>icons/db_disconnect.png</file>
+    <file>icons/view.png</file>
 </qresource>
 </RCC>
