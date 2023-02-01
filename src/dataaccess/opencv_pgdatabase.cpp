@@ -134,9 +134,9 @@ CVDbResult * OpenCVPgDatabase::execParams(
         delete _dbWork;
     _dbWork = new pqxx::work( *_dbConnection );
 #if PQXX_VERSION_MAJOR < 7
-    std::vector< pqxx::binarystring > params;
+    std::vector< pqxx::binarystring > vparams;
 #else
-    std::vector< std::basic_string<std::byte> > params;
+    std::vector< std::basic_string<std::byte> > vparams;
 #endif
     for(int i=0; i<nParams; i++) {
         switch( paramTypes[i] ) {
@@ -155,7 +155,7 @@ CVDbResult * OpenCVPgDatabase::execParams(
 #endif
                 string s = ( vStr.str() );
                 cerr << __PRETTY_FUNCTION__ << s << ' ' << idValue << endl;
-                params.push_back( vstr );
+                vparams.push_back( vstr );
                 break;
             }
             case CVDbResult::DataType::dtVarchar : default: {
@@ -179,7 +179,7 @@ CVDbResult * OpenCVPgDatabase::execParams(
                 for(int ii=0; ii<paramLengths[i]; ii++)
                     dVcharStr << std::hex << esc_str[ii];
                 cerr << __PRETTY_FUNCTION__ << ' ' << dVcharStr.str() << ' ' << dParam.str();
-                params.push_back( vchar );
+                vparams.push_back( vchar );
                 delete [] paramData;
                 break;
             }
@@ -192,12 +192,16 @@ CVDbResult * OpenCVPgDatabase::execParams(
                 const void* blobV = static_cast<const void *>(paramData);
                 std::basic_string<std::byte> blob( static_cast<const std::byte *>(blobV), paramSize);
 #endif
-                params.push_back( blob );
+                vparams.push_back( blob );
                 break;
             }
         }
     }
-    pqxx::result *res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(params)));
+//#if PQXX_VERSION_MAJOR < 7
+    pqxx::result *res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(vparams)));
+//#else
+//    pqxx::result *res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::internal::params(vparams)));
+//#endif
     if (std::empty(*res)) {
         this->rollback();
         throw std::runtime_error{"query does not executed!"};
