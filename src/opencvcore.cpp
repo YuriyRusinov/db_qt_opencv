@@ -17,7 +17,6 @@
 #include <AircraftTypeModel.h>
 #include <AircraftTypeForm.h>
 
-#include <opencv2/viz/widgets.hpp>
 #include <opencv2/highgui.hpp>
 #include "opencvcore.h"
 
@@ -268,6 +267,5 @@ void OpenCVCore::setImageType( shared_ptr< AircraftImage > aircraftImage ) {
 void OpenCVCore::viewImage( qlonglong id ) {
     string imName;
     cv::Mat pIm = m_databaseLoader->loadCVImage( id, imName );
-    
     cv::imshow(imName, pIm);
 }

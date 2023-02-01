@@ -13,8 +13,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <pqxx/binarystring.hxx>
-#include <pqxx/except.hxx>
+#include <pqxx/binarystring>
+#include <pqxx/except>
 
 #include <db_opencv_singleton.h>
 #include <opencvcore.h>
@@ -55,6 +55,7 @@ ImageTestMainWindow::ImageTestMainWindow(QWidget* parent, Qt::WindowFlags flags)
     connect( _UI->actionView_images, &QAction::triggered, this, &ImageTestMainWindow::viewImages );
     connect( cvCore, &OpenCVCore::setWidget, this, &ImageTestMainWindow::addSubWindow );
     connect( _UI->actInsert_image, &QAction::triggered, this,  &ImageTestMainWindow::insertImage );
+    connect( _UI->action_Search, &QAction::triggered, this,  &ImageTestMainWindow::searchImages );
     connect( _UI->act_Quit, &QAction::triggered, this, &ImageTestMainWindow::close );
 }
 
@@ -98,6 +99,7 @@ void ImageTestMainWindow::setActionsEnable( bool enable ) {
     _UI->menuImport->setEnabled( enable );
     _UI->act_Disconnect->setEnabled( enable );
     _UI->actView_aircraft_types->setEnabled( enable );
+    _UI->action_Search->setEnabled( enable );
 }
 
 void ImageTestMainWindow::insertImage() {
@@ -107,41 +109,9 @@ void ImageTestMainWindow::insertImage() {
         return;
 
     QImage im(imageFileName);
-/*
- *   For debug
- *
-    im.save("ttt.jpg", "JPG");
-    QByteArray ba;
-    QBuffer bbb( &ba );
-    bbb.open( QBuffer::WriteOnly );
-
-    im.save( &bbb, "JPG" );
-    bbb.close();
-
-    QImage im1;
-    bool isLoaded = im1.loadFromData( ba );
-    qDebug() << __PRETTY_FUNCTION__ << isLoaded << im1.isNull();
-    im1.save("ttt_1.jpg", "JPG");
-
-    const void* pBa ( (const void *)ba );
-    pqxx::binarystring pqStr( pBa, ba.size() );
-    qDebug() << __PRETTY_FUNCTION__ << ba.size() << ba.toStdString().size() << pqStr.size();
-    QByteArray ba1 = QByteArray::fromRawData( pqStr.get(),  pqStr.size() );
-    QFile fByteArr("ttt_by.bin");
-    fByteArr.open( QBuffer::WriteOnly );
-    QDataStream fByteArrStr( &fByteArr );
-    fByteArrStr << ba1;
-    QImage im2;
-    bool isLoaded2 = im2.loadFromData( ba1 );
-    qDebug() << __PRETTY_FUNCTION__ << isLoaded2 << ba1.size();
-    QFile tstIm("ttt_2.jpg");
-    tstIm.open( QBuffer::WriteOnly );
-    im2.save( &tstIm );
-    tstIm.close();
-*/
     shared_ptr< AircraftImage > aImage = std::make_shared< AircraftImage >(-1, QString(), im );
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
-    cvCore->loadAircraftImage( aImage );//-1, QString(), im );
+    cvCore->loadAircraftImage( aImage );
 }
 
 void ImageTestMainWindow::addSubWindow( QWidget* w ) {
@@ -187,4 +157,8 @@ void ImageTestMainWindow::importFromURL() {
 void ImageTestMainWindow::viewTypes() {
     OpenCVCore* cvCore = _mDbOpenCv->getCore();
     cvCore->GUIViewTypes();
+}
+
+void ImageTestMainWindow::searchImages() {
+    qDebug() << __PRETTY_FUNCTION__;
 }

@@ -46,7 +46,12 @@ public:
     virtual void prev() override;
 
 private:
-    pqxx::binarystring getCellAsBinaryString( int row, int column) const;
+#if PQXX_VERSION_MAJOR < 7
+    pqxx::binarystring getCellAsBinaryString0( int row, int column) const;
+#else
+    const void* getCellAsPointer( int row, int column) const;
+    std::basic_string<std::byte> getCellAsBinaryString( int row, int column) const;
+#endif
     // Возвращает для Postgresql результат запроса в виде pqxx::binarystring, удобно для полей типа bytea
 
     pqxx::result* m_res;

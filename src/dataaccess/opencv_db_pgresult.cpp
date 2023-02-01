@@ -8,15 +8,19 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include <string>
 
-#include <pqxx/result.hxx>
-#include <pqxx/row.hxx>
-#include <pqxx/field.hxx>
-#include <pqxx/binarystring.hxx>
+#include <pqxx/result>
+#include <pqxx/row>
+#include <pqxx/field>
+#include <pqxx/binarystring>
 #include <opencv2/imgcodecs.hpp>
 #include "opencv_db_pgresult.h"
 
 using std::vector;
+using std::string;
+using std::basic_string;
+using std::byte;
 
 CVDbPgResult::~CVDbPgResult() {
     if( m_res )
@@ -53,8 +57,15 @@ const char * CVDbPgResult::getCellData( int row, int column ) const {
         return nullptr;
 
     pqxx::field fCell( m_res->at(row).at(column) );
+#if PQXX_VERSION_MAJOR < 7
     pqxx::binarystring res_pqxx ( fCell );
     return res_pqxx.get();
+#else
+    int nn = fCell.size();
+    const char* res_s = fCell.c_str();//resc.value();
+    return res_s;
+#endif
+    //qDebug() << __PRETTY_FUNCTION__ << strncmp(res_pqxx.get(), res_s, nn ) << isSaved << res_pqxx.size() << nn << strlen(res_pqxx.get());
 } // возвращает результат запроса в виде const char *
 
 int CVDbPgResult::getCellLength( int row, int column ) const {
@@ -62,8 +73,12 @@ int CVDbPgResult::getCellLength( int row, int column ) const {
         return -1;
 
     pqxx::field fCell( m_res->at(row).at(column) );
+#if PQXX_VERSION_MAJOR < 7
     pqxx::binarystring res_pqxx ( fCell );
     return res_pqxx.size();
+#else
+    return fCell.size();
+#endif
 }
 
 string CVDbPgResult::getCell(int row, int column) const {
@@ -72,8 +87,6 @@ string CVDbPgResult::getCell(int row, int column) const {
         return string();
 
     pqxx::field fCell( m_res->at(row).at(column) );
-    pqxx::binarystring fCellB( fCell );
-    //std::cerr << fCellB.data() << std::endl;//m_res->at(row).at(column);
     return pqxx::to_string(fCell);
 } // Возвращает результат sql-запроса в формате std::string
 
@@ -82,12 +95,16 @@ QByteArray CVDbPgResult::getCellAsByteArray( int row, int column ) const {
         return QByteArray();
 
     pqxx::field fCell( m_res->at(row).at(column) );
-    pqxx::binarystring fCellB = getCellAsBinaryString( row, column );
+    int nn = getCellLength( row, column );//fCell.size();
+#if PQXX_VERSION_MAJOR < 7
+    pqxx::binarystring fCellB = getCellAsBinaryString0( row, column );
     pqxx::binarystring fCellBB( fCell );
     qDebug() << __PRETTY_FUNCTION__ << (fCellB == fCellBB) << row << column;
-    pqxx::field::size_type nn = getCellLength( row, column );//fCell.size();//strlen((const char*)buffer);
-    //qDebug() << __PRETTY_FUNCTION__ << nn << fCellB.size() << fCell.size() << (fCellB == fCellBB);
-    const char* imBytes = fCellB.get();
+    const char* imBytes = fCell.get();//c_str();
+#else
+    const void* imV = getCellAsPointer( row, column );
+    const char* imBytes = static_cast<const char *>(imV);//(imBytesStr.data());
+#endif
     QByteArray resbytes = QByteArray::fromRawData( imBytes, nn);
     return resbytes;
 } // Возвращает результат sql-запроса в виде QByteArray, удобно для полей типа bytea
@@ -96,13 +113,25 @@ QImage CVDbPgResult::getCellAsImage( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return QImage();
 
-    pqxx::binarystring imBytesStr = getCellAsBinaryString( row, column );
-    const char* imBytes = imBytesStr.get();
     int nn = getCellLength( row, column );
+#if PQXX_VERSION_MAJOR < 7
+    pqxx::binarystring imBytesStr0 = getCellAsBinaryString0( row, column );
+    const char* imBytes = imBytesStr0.get();
+#else
+    basic_string<std::byte> imBytesStr = getCellAsBinaryString( row, column );
+    const void* imV = getCellAsPointer( row, column );//static_cast<const void*>(imBytesStr.data());
+    basic_string<std::byte> imBytesStr0 = getCellAsBinaryString( row, column );
+    const void* imV0 = static_cast<const void*>(imBytesStr.data());//getCellAsPointer( row, column );
+    qDebug() << __PRETTY_FUNCTION__ << memcmp(imV, imV0, nn) << imV << imV0;
+    const char* imBytes = static_cast<const char *>(imV);
+#endif
     QByteArray imABytes = QByteArray::fromRawData( imBytes, nn );
+    QByteArray imABytes0 = getCellAsByteArray( row, column );
     QImage resImage;
     bool isLoaded = resImage.loadFromData( imABytes );
-    qDebug() << __PRETTY_FUNCTION__ << isLoaded;
+    QImage tIm;
+    bool isLoaded0 = tIm.loadFromData( imABytes0 );
+    qDebug() << __PRETTY_FUNCTION__ << isLoaded << isLoaded0 << (resImage == tIm ) << imABytes.compare(imABytes0);
     return resImage;
 }
 
@@ -110,15 +139,21 @@ cv::Mat CVDbPgResult::getCellAsMatrix( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return cv::Mat();
 
+#if PQXX_VERSION_MAJOR < 7
     pqxx::binarystring imBytesStr = getCellAsBinaryString( row, column );
     const char* imBytes = imBytesStr.get();
+#else
+    basic_string<std::byte> imBytesStr = getCellAsBinaryString( row, column );
+    const char* imBytes = static_cast<const char *>(static_cast<const void *>(imBytesStr.data()));
+#endif
     int nn = getCellLength( row, column );
     vector<uchar> jpgbytes(imBytes, imBytes+nn);
     cv::Mat res = cv::imdecode(jpgbytes, cv::IMREAD_COLOR);//cv::CV_LOAD_IMAGE_COLOR);
     return res;
 }
 
-pqxx::binarystring CVDbPgResult::getCellAsBinaryString( int row, int column ) const {
+#if PQXX_VERSION_MAJOR < 7
+pqxx::binarystring CVDbPgResult::getCellAsBinaryString0( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
         return pqxx::binarystring(nullptr, 0);
 
@@ -126,6 +161,23 @@ pqxx::binarystring CVDbPgResult::getCellAsBinaryString( int row, int column ) co
     pqxx::binarystring fCellB( fCell );
     return fCellB;
 }
+#else
+std::basic_string<std::byte> CVDbPgResult::getCellAsBinaryString( int row, int column) const {
+    if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )
+        return std::basic_string<std::byte>(nullptr, 0);
+
+    pqxx::field fCell( m_res->at(row).at(column) );
+    return fCell.as< std::basic_string<std::byte> >();
+}
+
+const void* CVDbPgResult::getCellAsPointer( int row, int column) const {
+    std::basic_string<std::byte> bytes = getCellAsBinaryString(row, column);
+    int nn = bytes.size();
+    void* pRes = new char[nn+1];
+    memcpy(pRes, static_cast<const void*>(bytes.data()), nn);
+    return pRes;
+}
+#endif
 
 bool CVDbPgResult::isEmpty( int row, int column ) const {
     if( m_res == nullptr || row >= m_res->size() || column >= m_res->at(row).size() )

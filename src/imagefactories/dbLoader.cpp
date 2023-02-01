@@ -7,8 +7,8 @@
 #include <opencv_pgdatabase.h>
 #include <opencv_db_result.h>
 
-#include <pqxx/binarystring.hxx>
-#include <pqxx/except.hxx>
+#include <pqxx/binarystring>
+#include <pqxx/except>
 #include "dbLoader.h"
 
 dbLoader::dbLoader( OpenCVDatabase* db, QObject* parent )

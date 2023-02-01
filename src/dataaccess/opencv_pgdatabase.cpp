@@ -1,10 +1,12 @@
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include <pqxx/pqxx>
-#include <pqxx/connection.hxx>
-#include <pqxx/transaction.hxx>
-#include <pqxx/result.hxx>
+#include <pqxx/connection>
+#include <pqxx/transaction>
+#include <pqxx/result>
+#include <pqxx/version>
 
 #include "opencv_db_pgresult.h"
 #include "opencv_pgdatabase.h"
@@ -131,15 +133,28 @@ CVDbResult * OpenCVPgDatabase::execParams(
     if( _dbWork )
         delete _dbWork;
     _dbWork = new pqxx::work( *_dbConnection );
+#if PQXX_VERSION_MAJOR < 7
     std::vector< pqxx::binarystring > params;
+#else
+    std::vector< std::basic_string<std::byte> > params;
+#endif
     for(int i=0; i<nParams; i++) {
         switch( paramTypes[i] ) {
             case CVDbResult::DataType::dtInt8 :
             case CVDbResult::DataType::dtInt4 :
             case CVDbResult::DataType::dtInt2 : {
-                long long idValue (atoll( paramValues[i] ));
-                pqxx::binarystring vstr ( pqxx::to_string(idValue) );//, sizeof(long long) );
-                //cerr << __PRETTY_FUNCTION__ << vstr.get() << ' ' << idValue << endl;
+               long long idValue (atoll( paramValues[i] ));
+               stringstream vStr;
+               vStr << idValue;
+#if PQXX_VERSION_MAJOR < 7
+                pqxx::binarystring vstr ( pqxx::to_string(idValue) );
+#else
+                const void* mStr = static_cast<const void *>( vStr.str().c_str() );
+                int n = vStr.str().size();
+                std::basic_string<std::byte> vstr (static_cast<const std::byte *>(mStr), n);
+#endif
+                string s = ( vStr.str() );
+                cerr << __PRETTY_FUNCTION__ << s << ' ' << idValue << endl;
                 params.push_back( vstr );
                 break;
             }
@@ -149,7 +164,21 @@ CVDbResult * OpenCVPgDatabase::execParams(
                 cerr << __PRETTY_FUNCTION__ << ' ' << paramData << endl;
                 string esc_str = _dbConnection->esc(paramData);
                 cerr << __PRETTY_FUNCTION__ << ' ' << esc_str << endl;
-                pqxx::binarystring vchar( esc_str.c_str()/*paramData*/, paramLengths[i]);
+#if PQXX_VERSION_MAJOR < 7
+                pqxx::binarystring vchar( esc_str.c_str(), paramLengths[i]);
+#else
+                const void* mStr = (const void *)paramValues[i];
+                //static_cast<const void *>( paramData );//esc_str.c_str() );
+                //, paramLengths[i] );
+                std::basic_string<std::byte> vchar( static_cast<const std::byte *>(mStr), paramLengths[i] );
+                //( std::begin(esc_str), std::end( esc_str) );
+#endif
+                stringstream dParam;
+                dParam << paramData;
+                stringstream dVcharStr;
+                for(int ii=0; ii<paramLengths[i]; ii++)
+                    dVcharStr << std::hex << esc_str[ii];
+                cerr << __PRETTY_FUNCTION__ << ' ' << dVcharStr.str() << ' ' << dParam.str();
                 params.push_back( vchar );
                 delete [] paramData;
                 break;
@@ -157,11 +186,12 @@ CVDbResult * OpenCVPgDatabase::execParams(
             case CVDbResult::DataType::dtBytea : {
                 void* paramData = (void *)paramValues[i];
                 int paramSize = paramLengths[i];
-                //QImage im;
-                //QByteArray ba = QByteArray::fromRawData( paramValues[i], paramSize);
-                //bool isLoaded = im.loadFromData( ba );
-                //cerr << __PRETTY_FUNCTION__ << " " << paramSize << ' ' << (isLoaded ? "true" : "false") << ' ' << endl;
+#if PQXX_VERSION_MAJOR < 7
                 pqxx::binarystring blob(paramData, paramSize);
+#else
+                const void* blobV = static_cast<const void *>(paramData);
+                std::basic_string<std::byte> blob( static_cast<const std::byte *>(blobV), paramSize);
+#endif
                 params.push_back( blob );
                 break;
             }
@@ -189,7 +219,10 @@ string OpenCVPgDatabase::escapeBinaryString(const unsigned char * fromString) co
         return string();
 
     int n = strlen( (char *)fromString );
-    return _dbConnection->esc_raw( fromString, n );
+    //string fStr( (char *)fromString, n);
+    const void* mStr = static_cast<const void *>( fromString );
+    std::basic_string<std::byte> bFromString( static_cast<const std::byte *>(mStr), n);
+    return _dbConnection->esc_raw( bFromString );//, n );
 }
 
 bool OpenCVPgDatabase::begin() const {
