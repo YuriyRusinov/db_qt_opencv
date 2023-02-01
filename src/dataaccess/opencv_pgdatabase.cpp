@@ -35,7 +35,7 @@ bool OpenCVPgDatabase::connect( string _ipServer,
     if( reconnect )
         disconnect();
     stringstream connString;
-    connString << " user= " << _user << " password= " << _password << " server=" << _ipServer << " dbname=" << _database << " port=" << _port;
+    connString << " user= " << _user << " password= " << _password << " host=" << _ipServer << " dbname=" << _database << " port=" << _port;
     if( _dbConnection != nullptr )
         delete _dbConnection;
 
@@ -45,7 +45,7 @@ bool OpenCVPgDatabase::connect( string _ipServer,
         retVal = _dbConnection->is_open();
     }
     catch( const std::exception &e ) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << __PRETTY_FUNCTION__ << ' ' << e.what() << std::endl;
         return false;
     }
     if( retVal ) {

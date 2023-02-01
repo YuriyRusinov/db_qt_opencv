@@ -267,5 +267,6 @@ void OpenCVCore::setImageType( shared_ptr< AircraftImage > aircraftImage ) {
 void OpenCVCore::viewImage( qlonglong id ) {
     string imName;
     cv::Mat pIm = m_databaseLoader->loadCVImage( id, imName );
+    
     cv::imshow(imName, pIm);
 }

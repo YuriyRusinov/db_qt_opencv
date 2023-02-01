@@ -45,7 +45,6 @@ set(HEADERS
     AircraftTypeForm.h
     AircraftTypeListForm.h
     AircraftTypeModel.h
-    AircraftSearchForm.h
 )
 
 set(SOURCES
@@ -56,7 +55,6 @@ set(SOURCES
     AircraftTypeForm.cpp
     AircraftTypeListForm.cpp
     AircraftTypeModel.cpp
-    AircraftSearchForm.cpp
 )
 
 set(FORMS
@@ -65,7 +63,6 @@ set(FORMS
     cv_image_list_form.ui
     aircraft_type_form.ui
     aircraft_type_list_form.ui
-    aircraft_search_form.ui
 )
 
 set(RESOURCES
