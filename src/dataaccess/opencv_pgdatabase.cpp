@@ -225,7 +225,7 @@ string OpenCVPgDatabase::escapeBinaryString(const unsigned char * fromString) co
 #else
     const void* mStr = static_cast<const void *>( fromString );
     std::basic_string<std::byte> bFromString( static_cast<const std::byte *>(mStr), n);
-    return _dbConnection->esc_raw( bFromString, n );
+    return _dbConnection->esc_raw( bFromString );
 #endif
 }
 
