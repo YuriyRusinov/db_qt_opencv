@@ -100,7 +100,7 @@ QByteArray CVDbPgResult::getCellAsByteArray( int row, int column ) const {
     pqxx::binarystring fCellB = getCellAsBinaryString0( row, column );
     pqxx::binarystring fCellBB( fCell );
     qDebug() << __PRETTY_FUNCTION__ << (fCellB == fCellBB) << row << column;
-    const char* imBytes = fCell.get();//c_str();
+    const char* imBytes = fCell.c_str();
 #else
     const void* imV = getCellAsPointer( row, column );
     const char* imBytes = static_cast<const char *>(imV);//(imBytesStr.data());
@@ -140,7 +140,7 @@ cv::Mat CVDbPgResult::getCellAsMatrix( int row, int column ) const {
         return cv::Mat();
 
 #if PQXX_VERSION_MAJOR < 7
-    pqxx::binarystring imBytesStr = getCellAsBinaryString( row, column );
+    pqxx::binarystring imBytesStr = getCellAsBinaryString0( row, column );
     const char* imBytes = imBytesStr.get();
 #else
     basic_string<std::byte> imBytesStr = getCellAsBinaryString( row, column );

@@ -220,9 +220,14 @@ string OpenCVPgDatabase::escapeBinaryString(const unsigned char * fromString) co
 
     int n = strlen( (char *)fromString );
     //string fStr( (char *)fromString, n);
+#if PQXX_VERSION_MAJOR < 7
+    return _dbConnection->esc_raw( fromString, n );
+#else
     const void* mStr = static_cast<const void *>( fromString );
+    const unsigned char* bFromString( static_cast<
     std::basic_string<std::byte> bFromString( static_cast<const std::byte *>(mStr), n);
-    return _dbConnection->esc_raw( bFromString );//, n );
+    return _dbConnection->esc_raw( bFromString, n );
+#endif
 }
 
 bool OpenCVPgDatabase::begin() const {
