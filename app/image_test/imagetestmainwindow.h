@@ -27,6 +27,8 @@ private slots:
     void importFromCamera();
     void importFromURL();
 
+    void searchImages();
+
     void setActionsEnable( bool enable );
     void addSubWindow( QWidget* w );
 private:

@@ -50,6 +50,8 @@
     <addaction name="actView_aircraft_types"/>
     <addaction name="separator"/>
     <addaction name="menuImport"/>
+    <addaction name="separator"/>
+    <addaction name="action_Search"/>
    </widget>
    <addaction name="menu_DB"/>
    <addaction name="menu_Aircrafts"/>
@@ -106,6 +108,11 @@
   <action name="actView_aircraft_types">
    <property name="text">
     <string>View aircraft types</string>
+   </property>
+  </action>
+  <action name="action_Search">
+   <property name="text">
+    <string>&amp;Search ...</string>
    </property>
   </action>
  </widget>
