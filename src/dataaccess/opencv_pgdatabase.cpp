@@ -1,6 +1,10 @@
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <locale>
+#include <codecvt>
+#include <vector>
 
 #include <pqxx/pqxx>
 #include <pqxx/connection>
@@ -136,7 +140,7 @@ CVDbResult * OpenCVPgDatabase::execParams(
 #if PQXX_VERSION_MAJOR < 7
     std::vector< pqxx::binarystring > vparams;
 #else
-    std::vector< std::basic_string<std::byte> > vparams;
+    std::vector< std::string > vparams;
 #endif
     for(int i=0; i<nParams; i++) {
         switch( paramTypes[i] ) {
@@ -151,7 +155,7 @@ CVDbResult * OpenCVPgDatabase::execParams(
 #else
                 const void* mStr = static_cast<const void *>( vStr.str().c_str() );
                 int n = vStr.str().size();
-                std::basic_string<std::byte> vstr (static_cast<const std::byte *>(mStr), n);
+                std::string vstr( vStr.str() );//static_cast<const std::byte *>(mStr), n);
 #endif
                 string s = ( vStr.str() );
                 cerr << __PRETTY_FUNCTION__ << s << ' ' << idValue << endl;
@@ -167,18 +171,11 @@ CVDbResult * OpenCVPgDatabase::execParams(
 #if PQXX_VERSION_MAJOR < 7
                 pqxx::binarystring vchar( esc_str.c_str(), paramLengths[i]);
 #else
+                string pStr( paramValues[i], paramLengths[i]);
                 const void* mStr = (const void *)paramValues[i];
-                //static_cast<const void *>( paramData );//esc_str.c_str() );
-                //, paramLengths[i] );
-                std::basic_string<std::byte> vchar( static_cast<const std::byte *>(mStr), paramLengths[i] );
-                //( std::begin(esc_str), std::end( esc_str) );
+                std::string vchar( pStr );
+                cerr << __PRETTY_FUNCTION__ << ' ' << vchar;
 #endif
-                stringstream dParam;
-                dParam << paramData;
-                stringstream dVcharStr;
-                for(int ii=0; ii<paramLengths[i]; ii++)
-                    dVcharStr << std::hex << esc_str[ii];
-                cerr << __PRETTY_FUNCTION__ << ' ' << dVcharStr.str() << ' ' << dParam.str();
                 vparams.push_back( vchar );
                 delete [] paramData;
                 break;
@@ -190,18 +187,31 @@ CVDbResult * OpenCVPgDatabase::execParams(
                 pqxx::binarystring blob(paramData, paramSize);
 #else
                 const void* blobV = static_cast<const void *>(paramData);
-                std::basic_string<std::byte> blob( static_cast<const std::byte *>(blobV), paramSize);
+                std::basic_string_view<std::byte> blob0( static_cast<const std::byte*>(blobV), paramSize);
+                string blob = _dbConnection->esc_raw( blob0 );
 #endif
                 vparams.push_back( blob );
                 break;
             }
         }
     }
-//#if PQXX_VERSION_MAJOR < 7
-    pqxx::result *res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(vparams)));
-//#else
-//    pqxx::result *res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::internal::params(vparams)));
-//#endif
+    pqxx::result *res = nullptr;
+#if PQXX_VERSION_CHECK < 0x070600
+    try {
+        res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(vparams)));
+    }
+#else
+    pqxx::params vpars( vparams );
+    try {
+        res = new pqxx::result (_dbWork->exec_prepared("execParams", vpars) );
+    }
+#endif
+    catch( pqxx::failure& e) {
+        cerr << __PRETTY_FUNCTION__ << ' ' << e.what();
+        this->rollback();
+        return nullptr;
+    }
+
     if (std::empty(*res)) {
         this->rollback();
         throw std::runtime_error{"query does not executed!"};

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <locale>
+#include <codecvt>
 
 #include <opencv_database.h>
 #include <opencv_pgdatabase.h>
@@ -44,12 +46,21 @@ long long dbWriter::insertImage(const QImage& im, QString imName) {
     paramTypes[1] = CVDbResult::DataType::dtBytea;
     const char** paramValues = new const char*[nParams];
     int nameSize = imName.toUtf8().size();
-    paramValues[0] = new char [nameSize+1];
+    paramValues[0] = new char [nameSize];
+#if PQXX_VERSION_MAJOR < 7
     strncpy( const_cast<char *>(paramValues[0]), imName.toUtf8().constData(), nameSize);
+#else
+    strncpy( const_cast<char *>(paramValues[0]), imName.toStdString().c_str(), nameSize);
+#endif
     const void* pBa ( (const void *)baImg );
     int imgN = baImg.size();
+#if PQXX_VERSION_MAJOR < 7
     pqxx::binarystring pqStr( pBa, imgN );
     paramValues[1] = pqStr.get();
+#else
+    paramValues[1] = new char[ imgN+1 ];
+    memcpy((void *)paramValues[1], pBa, imgN );
+#endif
     int* paramLength = new int[nParams];
     paramLength[0] = nameSize;
     paramLength[1] = imgN;
@@ -131,8 +142,13 @@ long long dbWriter::updateImage(const QImage& im, QString imName, qlonglong id) 
     qDebug() << __PRETTY_FUNCTION__ << paramValues[0];
     const void* pBa ( (const void *)baImg );
     int imgN = baImg.size();
+#if PQXX_VERSION_MAJOR < 7
     pqxx::binarystring pqStr( pBa, imgN );
     paramValues[1] = pqStr.get();
+#else
+    paramValues[1] = new char[ imgN+1 ];
+    memcpy((void *)paramValues[1], pBa, imgN );
+#endif
     int* paramLength = new int[nParams];
     //paramLength[0] = sizeof(long long);//idStr.str().size();
     paramLength[0] = nameSize;//2*imName.size();
