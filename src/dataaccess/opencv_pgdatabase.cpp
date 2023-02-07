@@ -155,7 +155,7 @@ CVDbResult * OpenCVPgDatabase::execParams(
 #else
                 const void* mStr = static_cast<const void *>( vStr.str().c_str() );
                 int n = vStr.str().size();
-                std::string vstr( vStr.str() );//static_cast<const std::byte *>(mStr), n);
+                std::string vstr( vStr.str() );
 #endif
                 string s = ( vStr.str() );
                 cerr << __PRETTY_FUNCTION__ << s << ' ' << idValue << endl;

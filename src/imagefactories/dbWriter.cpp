@@ -120,39 +120,35 @@ long long dbWriter::updateImage(const QImage& im, QString imName, qlonglong id) 
     buffer.close();
 
     qDebug() << __PRETTY_FUNCTION__ << im.size() << baImg.size() << imName;
-    QString SQL = QString("select set_image ( %1, ").arg(id);
-    const int nParams = 2;
+    QString SQL = QString("select set_image ( ");
+    const int nParams = 3;
     int* paramTypes = new int[nParams];
-    //paramTypes[0] = CVDbResult::DataType::dtInt8;
-    paramTypes[0] = CVDbResult::DataType::dtVarchar;
-    paramTypes[1] = CVDbResult::DataType::dtBytea;
+    paramTypes[0] = CVDbResult::DataType::dtInt8;
+    paramTypes[1] = CVDbResult::DataType::dtVarchar;
+    paramTypes[2] = CVDbResult::DataType::dtBytea;
     const char** paramValues = new const char*[nParams];
     stringstream idStr;
     idStr << id;
-    //
-    // TODO: debug execution with numeric parameters
-    //
 
-    //qDebug() << __PRETTY_FUNCTION__ << sizeof(long long) << idStr.str().size();
-    //paramValues[0] = new long long( id ) ;//sizeof(long long;//sizeof(long long)+1];idStr.str().size()+1
-    //strncpy( const_cast<char *>(paramValues[0]), idStr.str().c_str(), idStr.str().size() );
+    paramValues[0] = new char [idStr.str().size()];
+    strncpy( const_cast<char *>(paramValues[0]), idStr.str().c_str(), idStr.str().size() );
     int nameSize = imName.toUtf8().size();
-    paramValues[0] = new char [nameSize+1];
-    strncpy( const_cast<char *>(paramValues[0]), imName.toUtf8().constData(), nameSize);
-    qDebug() << __PRETTY_FUNCTION__ << paramValues[0];
+    paramValues[1] = new char [nameSize+1];
+    strncpy( const_cast<char *>(paramValues[1]), imName.toUtf8().constData(), nameSize);
+    qDebug() << __PRETTY_FUNCTION__ << paramValues[1];
     const void* pBa ( (const void *)baImg );
     int imgN = baImg.size();
 #if PQXX_VERSION_MAJOR < 7
     pqxx::binarystring pqStr( pBa, imgN );
-    paramValues[1] = pqStr.get();
+    paramValues[2] = pqStr.get();
 #else
-    paramValues[1] = new char[ imgN+1 ];
-    memcpy((void *)paramValues[1], pBa, imgN );
+    paramValues[2] = new char[ imgN+1 ];
+    memcpy((void *)paramValues[2], pBa, imgN );
 #endif
     int* paramLength = new int[nParams];
-    //paramLength[0] = sizeof(long long);//idStr.str().size();
-    paramLength[0] = nameSize;//2*imName.size();
-    paramLength[1] = imgN;
+    paramLength[0] = sizeof(long long);//idStr.str().size();
+    paramLength[1] = nameSize;//2*imName.size();
+    paramLength[2] = imgN;
     int* paramFormats = new int[nParams];
     int resForm = 0;
     CVDbResult* res = m_db->execParams( SQL.toStdString().c_str(),

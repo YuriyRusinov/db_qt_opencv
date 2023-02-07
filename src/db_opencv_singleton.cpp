@@ -22,7 +22,7 @@ void dbOpenCvS::reset() {
     //std::cout << __PRETTY_FUNCTION__ << ' ' << isInst << std::endl;
     if( _instance != nullptr ) {
         delete _instance;
-        std::cout << __PRETTY_FUNCTION__ << "Deleted " << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << " Deleted " << std::endl;
     }
     _instance = nullptr;
 }
