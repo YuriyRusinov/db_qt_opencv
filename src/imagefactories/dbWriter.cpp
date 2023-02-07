@@ -132,9 +132,14 @@ long long dbWriter::updateImage(const QImage& im, QString imName, qlonglong id) 
 
     paramValues[0] = new char [idStr.str().size()];
     strncpy( const_cast<char *>(paramValues[0]), idStr.str().c_str(), idStr.str().size() );
+    qDebug() << __PRETTY_FUNCTION__ << paramValues[0] << atoll( paramValues[0] );
     int nameSize = imName.toUtf8().size();
     paramValues[1] = new char [nameSize+1];
+#if PQXX_VERSION_MAJOR < 7
     strncpy( const_cast<char *>(paramValues[1]), imName.toUtf8().constData(), nameSize);
+#else
+    strncpy( const_cast<char *>(paramValues[1]), imName.toStdString().c_str(), nameSize);
+#endif
     qDebug() << __PRETTY_FUNCTION__ << paramValues[1];
     const void* pBa ( (const void *)baImg );
     int imgN = baImg.size();

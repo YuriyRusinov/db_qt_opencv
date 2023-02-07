@@ -58,4 +58,5 @@ public:
 private:
     mutable pqxx::connection* _dbConnection;
     mutable pqxx::work* _dbWork;
+    int* const _prepCounter;
 };

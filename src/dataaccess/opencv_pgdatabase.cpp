@@ -19,14 +19,17 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::stringstream;
+using std::ios_base;
 using pqxx::connection;
 
 OpenCVPgDatabase::OpenCVPgDatabase()
     : _dbConnection ( nullptr ),
-    _dbWork ( nullptr ) {
+    _dbWork ( nullptr ), 
+    _prepCounter( new int(0) ) {
 }
 
 OpenCVPgDatabase::~OpenCVPgDatabase() {
+    delete _prepCounter;
     cout << __PRETTY_FUNCTION__ << endl;
 }
 
@@ -133,7 +136,11 @@ CVDbResult * OpenCVPgDatabase::execParams(
         SQLstr << "$" << (i+1) << (i<nParams-1 ? ", " : ");");
     }
     cerr << __PRETTY_FUNCTION__ << " SQL query is " << SQLstr.str() << endl;
-    _dbConnection->prepare("execParams", SQLstr.str().c_str());
+    (*_prepCounter)++;
+    stringstream eStrPC( "execParams", ios_base::app | ios_base::out );
+    eStrPC << *_prepCounter;
+    string eStr = eStrPC.str();
+    _dbConnection->prepare(eStr, SQLstr.str().c_str());
     if( _dbWork )
         delete _dbWork;
     _dbWork = new pqxx::work( *_dbConnection );
@@ -198,12 +205,12 @@ CVDbResult * OpenCVPgDatabase::execParams(
     pqxx::result *res = nullptr;
 #if PQXX_VERSION_CHECK < 0x070600
     try {
-        res = new pqxx::result (_dbWork->exec_prepared("execParams", pqxx::prepare::make_dynamic_params(vparams)));
+        res = new pqxx::result (_dbWork->exec_prepared(eStr, pqxx::prepare::make_dynamic_params(vparams)));
     }
 #else
     pqxx::params vpars( vparams );
     try {
-        res = new pqxx::result (_dbWork->exec_prepared("execParams", vpars) );
+        res = new pqxx::result (_dbWork->exec_prepared(eStr, vpars) );
     }
 #endif
     catch( pqxx::failure& e) {
@@ -218,6 +225,8 @@ CVDbResult * OpenCVPgDatabase::execParams(
     }
     _dbWork->commit();
     CVDbResult* rParamRes = new CVDbPgResult( res );
+    delete _dbWork;
+    _dbWork = nullptr;
     return rParamRes;
 }
 
