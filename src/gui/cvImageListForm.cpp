@@ -1,5 +1,6 @@
 #include <QAbstractItemModel>
 #include <QAbstractItemDelegate>
+#include <QHeaderView>
 #include <QItemSelectionModel>
 #include <QItemSelection>
 #include <QModelIndex>

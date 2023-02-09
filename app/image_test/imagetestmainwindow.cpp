@@ -23,6 +23,7 @@
 #include <dbLoader.h>
 #include <dbWriter.h>
 #include <AircraftImage.h>
+#include <cvImageListForm.h>
 
 #include "imagetestmainwindow.h"
 #include "ui_image_test_main_window.h"
@@ -118,9 +119,13 @@ void ImageTestMainWindow::addSubWindow( QWidget* w ) {
     if(w == nullptr)
         return;
     QMdiSubWindow * mdiW = _mMdiArea->addSubWindow( w );
-    mdiW->setAttribute( Qt::WA_DeleteOnClose );
+    w->setAttribute( Qt::WA_DeleteOnClose );
     w->show();
     mdiW->setAttribute( Qt::WA_DeleteOnClose );
+    if( qobject_cast< cvImageListForm *>(w) ) {
+        mdiW->resize(512, w->height());
+        mdiW->updateGeometry();
+    }
 }
 
 void ImageTestMainWindow::importFromDir() {

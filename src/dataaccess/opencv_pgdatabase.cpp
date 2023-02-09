@@ -146,8 +146,11 @@ CVDbResult * OpenCVPgDatabase::execParams(
     _dbWork = new pqxx::work( *_dbConnection );
 #if PQXX_VERSION_MAJOR < 7
     std::vector< pqxx::binarystring > vparams;
-#else
+#elif PQXX_VERSION_MAJOR == 0x07 && PQXX_VERSION_MINOR < 0x06
     std::vector< std::string > vparams;
+#else
+    pqxx::params vparams;
+    vparams.reserve( nParams );
 #endif
     for(int i=0; i<nParams; i++) {
         switch( paramTypes[i] ) {
@@ -166,7 +169,11 @@ CVDbResult * OpenCVPgDatabase::execParams(
 #endif
                 string s = ( vStr.str() );
                 cerr << __PRETTY_FUNCTION__ << s << ' ' << idValue << endl;
+#if PQXX_VERSION_MAJOR < 0x07 || (PQXX_VERSION_MAJOR == 0x07 && PQXX_VERSION_MINOR < 0x06)
                 vparams.push_back( vstr );
+#else
+                vparams.append( vstr );
+#endif
                 break;
             }
             case CVDbResult::DataType::dtVarchar : default: {
@@ -183,7 +190,11 @@ CVDbResult * OpenCVPgDatabase::execParams(
                 std::string vchar( pStr );
                 cerr << __PRETTY_FUNCTION__ << ' ' << vchar;
 #endif
+#if PQXX_VERSION_MAJOR < 0x07 || (PQXX_VERSION_MAJOR == 0x07 && PQXX_VERSION_MINOR < 0x06)
                 vparams.push_back( vchar );
+#else
+                vparams.append( vchar );
+#endif
                 delete [] paramData;
                 break;
             }
@@ -197,20 +208,24 @@ CVDbResult * OpenCVPgDatabase::execParams(
                 std::basic_string_view<std::byte> blob0( static_cast<const std::byte*>(blobV), paramSize);
                 string blob = _dbConnection->esc_raw( blob0 );
 #endif
+#if PQXX_VERSION_MAJOR < 0x07 || (PQXX_VERSION_MAJOR == 0x07 && PQXX_VERSION_MINOR < 0x06)
                 vparams.push_back( blob );
+#else
+                vparams.append( blob );
+#endif
                 break;
             }
         }
     }
     pqxx::result *res = nullptr;
-#if PQXX_VERSION_CHECK < 0x070600
+    std::cerr << __PRETTY_FUNCTION__ << std::hex << PQXX_VERSION_MAJOR << ' ' << std::hex << PQXX_VERSION_MINOR;
+#if PQXX_VERSION_MAJOR < 0x07 || (PQXX_VERSION_MAJOR == 0x07 && PQXX_VERSION_MINOR < 0x06 )
     try {
         res = new pqxx::result (_dbWork->exec_prepared(eStr, pqxx::prepare::make_dynamic_params(vparams)));
     }
 #else
-    pqxx::params vpars( vparams );
     try {
-        res = new pqxx::result (_dbWork->exec_prepared(eStr, vpars) );
+        res = new pqxx::result (_dbWork->exec_prepared(eStr, vparams) );
     }
 #endif
     catch( pqxx::failure& e) {

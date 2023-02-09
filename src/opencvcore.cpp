@@ -120,7 +120,6 @@ QWidget* OpenCVCore::GUIViewImages( QWidget* parent, Qt::WindowFlags flags ) {
 
     QAbstractItemModel * imModel = new cvImageModel( images );
     imListForm->setImagesModel( imModel );
-    qDebug() << __PRETTY_FUNCTION__ << imModel->rowCount();
     emit setWidget( imListForm );
     return imListForm;
 }
