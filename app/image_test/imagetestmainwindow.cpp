@@ -118,13 +118,14 @@ void ImageTestMainWindow::insertImage() {
 void ImageTestMainWindow::addSubWindow( QWidget* w ) {
     if(w == nullptr)
         return;
-    QMdiSubWindow * mdiW = _mMdiArea->addSubWindow( w );
+    QMdiSubWindow * mdiW = _mMdiArea->addSubWindow( w, Qt::SubWindow );
     w->setAttribute( Qt::WA_DeleteOnClose );
     w->show();
     mdiW->setAttribute( Qt::WA_DeleteOnClose );
+    mdiW->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+
     if( qobject_cast< cvImageListForm *>(w) ) {
-        mdiW->resize(512, w->height());
-        mdiW->updateGeometry();
+        mdiW->resize(512, mdiW->height());
     }
 }
 
