@@ -123,10 +123,7 @@ void ImageTestMainWindow::addSubWindow( QWidget* w ) {
     w->show();
     mdiW->setAttribute( Qt::WA_DeleteOnClose );
     mdiW->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-
-    if( qobject_cast< cvImageListForm *>(w) ) {
-        mdiW->resize(512, mdiW->height());
-    }
+    mdiW->setMinimumSize( QSize(512, 512) );
 }
 
 void ImageTestMainWindow::importFromDir() {
